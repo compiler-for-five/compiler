@@ -1,0 +1,1767 @@
+   0  $accept : Result $end
+
+   1  Result : Program
+
+   2  Program : RETYPE MAIN LB RB Block
+
+   3  RETYPE : VOID
+   4         | TYPE
+
+   5  Block : BLB Stmts BRB
+
+   6  Block_Stmt : Block
+   7             | Stmt
+
+   8  Stmts : Stmts Stmt
+   9        |
+
+  10  Stmt : IF LB Bool_expr RB Block_Stmt
+  11       | IF LB Bool_expr RB Block_Stmt ELSE Block_Stmt
+  12       | RETURN Expr SEM
+  13       | WHILE LB Bool_expr RB Block_Stmt
+  14       | DO Block WHILE LB Bool_expr RB SEM
+  15       | FOR LB For_First SEM For_Second SEM For_Third RB Block_Stmt
+  16       | Declaration_stmt
+  17       | Assignment_Stmt
+  18       | ID LB Expr RB SEM
+  19       | ID LB ID RB SEM
+
+  20  Assignment_Stmt : Declarator EQ Expr SEM
+
+  21  Assignment_list : Initializer
+  22                  | Assignment_list COMMA Initializer
+
+  23  direct_declarator : ID
+  24                    | direct_declarator MLB MRB
+  25                    | direct_declarator MLB NUMBER MRB
+
+  26  Declarator : STAR direct_declarator
+  27             | direct_declarator
+
+  28  Initial_declaration_list : Init_declarator
+  29                           | Initial_declaration_list COMMA Init_declarator
+
+  30  Init_declarator : Declarator
+  31                  | Initializer
+
+  32  Initializer : Declarator EQ Expr
+
+  33  Declaration_stmt : TYPE Initial_declaration_list SEM
+
+  34  For_First : TYPE Assignment_list
+  35            | Assignment_list
+  36            |
+
+  37  For_Second : Bool_expr
+  38             |
+
+  39  For_Third : Assignment_list
+  40            |
+
+  41  logical_and_expr : Bool
+  42                   | logical_and_expr AND Bool
+
+  43  logical_or_expr : logical_and_expr
+  44                  | logical_or_expr OR logical_and_expr
+
+  45  Bool_expr : logical_or_expr
+
+  46  Bool : Expr LT Expr
+  47       | Expr LE Expr
+  48       | Expr GT Expr
+  49       | Expr GE Expr
+  50       | Expr EQUEL Expr
+  51       | Expr NE Expr
+  52       | Expr
+
+  53  unary_expr : Factor
+  54             | unary_operator unary_expr
+
+  55  unary_operator : ADD
+  56                 | DEC
+  57                 | NOT
+  58                 | SINGNALAND
+  59                 | STAR
+
+  60  Expr : Expr ADD Term
+  61       | Expr DEC Term
+  62       | Term
+
+  63  Term : Term STAR unary_expr
+  64       | Term DIV unary_expr
+  65       | Term MOD unary_expr
+  66       | POW
+
+  67  POW : unary_expr
+  68      | POW EXP unary_expr
+
+  69  Factor : LB Expr RB
+  70         | Declarator
+  71         | NUMBER
+
+state 0
+	$accept : . Result $end  (0)
+
+	TYPE  shift 1
+	VOID  shift 2
+	.  error
+
+	Result  goto 3
+	RETYPE  goto 4
+	Program  goto 5
+
+
+state 1
+	RETYPE : TYPE .  (4)
+
+	.  reduce 4
+
+
+state 2
+	RETYPE : VOID .  (3)
+
+	.  reduce 3
+
+
+state 3
+	$accept : Result . $end  (0)
+
+	$end  accept
+
+
+state 4
+	Program : RETYPE . MAIN LB RB Block  (2)
+
+	MAIN  shift 6
+	.  error
+
+
+state 5
+	Result : Program .  (1)
+
+	.  reduce 1
+
+
+state 6
+	Program : RETYPE MAIN . LB RB Block  (2)
+
+	LB  shift 7
+	.  error
+
+
+state 7
+	Program : RETYPE MAIN LB . RB Block  (2)
+
+	RB  shift 8
+	.  error
+
+
+state 8
+	Program : RETYPE MAIN LB RB . Block  (2)
+
+	BLB  shift 9
+	.  error
+
+	Block  goto 10
+
+
+state 9
+	Block : BLB . Stmts BRB  (5)
+	Stmts : .  (9)
+
+	.  reduce 9
+
+	Stmts  goto 11
+
+
+state 10
+	Program : RETYPE MAIN LB RB Block .  (2)
+
+	.  reduce 2
+
+
+state 11
+	Block : BLB Stmts . BRB  (5)
+	Stmts : Stmts . Stmt  (8)
+
+	WHILE  shift 12
+	DO  shift 13
+	IF  shift 14
+	FOR  shift 15
+	RETURN  shift 16
+	TYPE  shift 17
+	ID  shift 18
+	STAR  shift 19
+	BRB  shift 20
+	.  error
+
+	Stmt  goto 21
+	Declaration_stmt  goto 22
+	Assignment_Stmt  goto 23
+	direct_declarator  goto 24
+	Declarator  goto 25
+
+
+state 12
+	Stmt : WHILE . LB Bool_expr RB Block_Stmt  (13)
+
+	LB  shift 26
+	.  error
+
+
+state 13
+	Stmt : DO . Block WHILE LB Bool_expr RB SEM  (14)
+
+	BLB  shift 9
+	.  error
+
+	Block  goto 27
+
+
+state 14
+	Stmt : IF . LB Bool_expr RB Block_Stmt  (10)
+	Stmt : IF . LB Bool_expr RB Block_Stmt ELSE Block_Stmt  (11)
+
+	LB  shift 28
+	.  error
+
+
+state 15
+	Stmt : FOR . LB For_First SEM For_Second SEM For_Third RB Block_Stmt  (15)
+
+	LB  shift 29
+	.  error
+
+
+state 16
+	Stmt : RETURN . Expr SEM  (12)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 38
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 17
+	Declaration_stmt : TYPE . Initial_declaration_list SEM  (33)
+
+	ID  shift 31
+	STAR  shift 19
+	.  error
+
+	Initializer  goto 45
+	Init_declarator  goto 46
+	Initial_declaration_list  goto 47
+	direct_declarator  goto 24
+	Declarator  goto 48
+
+
+state 18
+	Stmt : ID . LB Expr RB SEM  (18)
+	Stmt : ID . LB ID RB SEM  (19)
+	direct_declarator : ID .  (23)
+
+	LB  shift 49
+	EQ  reduce 23
+	MLB  reduce 23
+
+
+state 19
+	Declarator : STAR . direct_declarator  (26)
+
+	ID  shift 31
+	.  error
+
+	direct_declarator  goto 50
+
+
+state 20
+	Block : BLB Stmts BRB .  (5)
+
+	.  reduce 5
+
+
+state 21
+	Stmts : Stmts Stmt .  (8)
+
+	.  reduce 8
+
+
+state 22
+	Stmt : Declaration_stmt .  (16)
+
+	.  reduce 16
+
+
+state 23
+	Stmt : Assignment_Stmt .  (17)
+
+	.  reduce 17
+
+
+state 24
+	direct_declarator : direct_declarator . MLB MRB  (24)
+	direct_declarator : direct_declarator . MLB NUMBER MRB  (25)
+	Declarator : direct_declarator .  (27)
+
+	MLB  shift 51
+	SEM  reduce 27
+	COMMA  reduce 27
+	EQ  reduce 27
+	OR  reduce 27
+	AND  reduce 27
+	LT  reduce 27
+	LE  reduce 27
+	GT  reduce 27
+	GE  reduce 27
+	EQUEL  reduce 27
+	NE  reduce 27
+	DEC  reduce 27
+	ADD  reduce 27
+	DIV  reduce 27
+	STAR  reduce 27
+	MOD  reduce 27
+	EXP  reduce 27
+	RB  reduce 27
+
+
+state 25
+	Assignment_Stmt : Declarator . EQ Expr SEM  (20)
+
+	EQ  shift 52
+	.  error
+
+
+state 26
+	Stmt : WHILE LB . Bool_expr RB Block_Stmt  (13)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Bool  goto 53
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+	Bool_expr  goto 55
+	logical_and_expr  goto 56
+	logical_or_expr  goto 57
+
+
+state 27
+	Stmt : DO Block . WHILE LB Bool_expr RB SEM  (14)
+
+	WHILE  shift 58
+	.  error
+
+
+state 28
+	Stmt : IF LB . Bool_expr RB Block_Stmt  (10)
+	Stmt : IF LB . Bool_expr RB Block_Stmt ELSE Block_Stmt  (11)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Bool  goto 53
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+	Bool_expr  goto 59
+	logical_and_expr  goto 56
+	logical_or_expr  goto 57
+
+
+state 29
+	Stmt : FOR LB . For_First SEM For_Second SEM For_Third RB Block_Stmt  (15)
+	For_First : .  (36)
+
+	TYPE  shift 60
+	ID  shift 31
+	STAR  shift 19
+	SEM  reduce 36
+
+	Initializer  goto 61
+	Assignment_list  goto 62
+	For_First  goto 63
+	direct_declarator  goto 24
+	Declarator  goto 64
+
+
+state 30
+	unary_operator : SINGNALAND .  (58)
+
+	.  reduce 58
+
+
+state 31
+	direct_declarator : ID .  (23)
+
+	.  reduce 23
+
+
+state 32
+	Factor : NUMBER .  (71)
+
+	.  reduce 71
+
+
+state 33
+	unary_operator : DEC .  (56)
+
+	.  reduce 56
+
+
+state 34
+	unary_operator : ADD .  (55)
+
+	.  reduce 55
+
+
+35: shift/reduce conflict (shift 31, reduce 59) on ID
+state 35
+	Declarator : STAR . direct_declarator  (26)
+	unary_operator : STAR .  (59)
+
+	ID  shift 31
+	SINGNALAND  reduce 59
+	NUMBER  reduce 59
+	DEC  reduce 59
+	ADD  reduce 59
+	STAR  reduce 59
+	NOT  reduce 59
+	LB  reduce 59
+
+	direct_declarator  goto 50
+
+
+state 36
+	unary_operator : NOT .  (57)
+
+	.  reduce 57
+
+
+state 37
+	Factor : LB . Expr RB  (69)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 65
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 38
+	Stmt : RETURN Expr . SEM  (12)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	SEM  shift 66
+	DEC  shift 67
+	ADD  shift 68
+	.  error
+
+
+state 39
+	Expr : Term .  (62)
+	Term : Term . STAR unary_expr  (63)
+	Term : Term . DIV unary_expr  (64)
+	Term : Term . MOD unary_expr  (65)
+
+	DIV  shift 69
+	STAR  shift 70
+	MOD  shift 71
+	SEM  reduce 62
+	COMMA  reduce 62
+	OR  reduce 62
+	AND  reduce 62
+	LT  reduce 62
+	LE  reduce 62
+	GT  reduce 62
+	GE  reduce 62
+	EQUEL  reduce 62
+	NE  reduce 62
+	DEC  reduce 62
+	ADD  reduce 62
+	RB  reduce 62
+
+
+state 40
+	unary_expr : Factor .  (53)
+
+	.  reduce 53
+
+
+state 41
+	Factor : Declarator .  (70)
+
+	.  reduce 70
+
+
+state 42
+	POW : unary_expr .  (67)
+
+	.  reduce 67
+
+
+state 43
+	unary_expr : unary_operator . unary_expr  (54)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 72
+	unary_operator  goto 43
+
+
+state 44
+	Term : POW .  (66)
+	POW : POW . EXP unary_expr  (68)
+
+	EXP  shift 73
+	SEM  reduce 66
+	COMMA  reduce 66
+	OR  reduce 66
+	AND  reduce 66
+	LT  reduce 66
+	LE  reduce 66
+	GT  reduce 66
+	GE  reduce 66
+	EQUEL  reduce 66
+	NE  reduce 66
+	DEC  reduce 66
+	ADD  reduce 66
+	DIV  reduce 66
+	STAR  reduce 66
+	MOD  reduce 66
+	RB  reduce 66
+
+
+state 45
+	Init_declarator : Initializer .  (31)
+
+	.  reduce 31
+
+
+state 46
+	Initial_declaration_list : Init_declarator .  (28)
+
+	.  reduce 28
+
+
+state 47
+	Initial_declaration_list : Initial_declaration_list . COMMA Init_declarator  (29)
+	Declaration_stmt : TYPE Initial_declaration_list . SEM  (33)
+
+	SEM  shift 74
+	COMMA  shift 75
+	.  error
+
+
+state 48
+	Init_declarator : Declarator .  (30)
+	Initializer : Declarator . EQ Expr  (32)
+
+	EQ  shift 76
+	SEM  reduce 30
+	COMMA  reduce 30
+
+
+state 49
+	Stmt : ID LB . Expr RB SEM  (18)
+	Stmt : ID LB . ID RB SEM  (19)
+
+	SINGNALAND  shift 30
+	ID  shift 77
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 78
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 50
+	direct_declarator : direct_declarator . MLB MRB  (24)
+	direct_declarator : direct_declarator . MLB NUMBER MRB  (25)
+	Declarator : STAR direct_declarator .  (26)
+
+	MLB  shift 51
+	SEM  reduce 26
+	COMMA  reduce 26
+	EQ  reduce 26
+	OR  reduce 26
+	AND  reduce 26
+	LT  reduce 26
+	LE  reduce 26
+	GT  reduce 26
+	GE  reduce 26
+	EQUEL  reduce 26
+	NE  reduce 26
+	DEC  reduce 26
+	ADD  reduce 26
+	DIV  reduce 26
+	STAR  reduce 26
+	MOD  reduce 26
+	EXP  reduce 26
+	RB  reduce 26
+
+
+state 51
+	direct_declarator : direct_declarator MLB . MRB  (24)
+	direct_declarator : direct_declarator MLB . NUMBER MRB  (25)
+
+	NUMBER  shift 79
+	MRB  shift 80
+	.  error
+
+
+state 52
+	Assignment_Stmt : Declarator EQ . Expr SEM  (20)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 81
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 53
+	logical_and_expr : Bool .  (41)
+
+	.  reduce 41
+
+
+state 54
+	Bool : Expr . LT Expr  (46)
+	Bool : Expr . LE Expr  (47)
+	Bool : Expr . GT Expr  (48)
+	Bool : Expr . GE Expr  (49)
+	Bool : Expr . EQUEL Expr  (50)
+	Bool : Expr . NE Expr  (51)
+	Bool : Expr .  (52)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	LT  shift 82
+	LE  shift 83
+	GT  shift 84
+	GE  shift 85
+	EQUEL  shift 86
+	NE  shift 87
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 52
+	OR  reduce 52
+	AND  reduce 52
+	RB  reduce 52
+
+
+state 55
+	Stmt : WHILE LB Bool_expr . RB Block_Stmt  (13)
+
+	RB  shift 88
+	.  error
+
+
+state 56
+	logical_and_expr : logical_and_expr . AND Bool  (42)
+	logical_or_expr : logical_and_expr .  (43)
+
+	AND  shift 89
+	SEM  reduce 43
+	OR  reduce 43
+	RB  reduce 43
+
+
+state 57
+	logical_or_expr : logical_or_expr . OR logical_and_expr  (44)
+	Bool_expr : logical_or_expr .  (45)
+
+	OR  shift 90
+	SEM  reduce 45
+	RB  reduce 45
+
+
+state 58
+	Stmt : DO Block WHILE . LB Bool_expr RB SEM  (14)
+
+	LB  shift 91
+	.  error
+
+
+state 59
+	Stmt : IF LB Bool_expr . RB Block_Stmt  (10)
+	Stmt : IF LB Bool_expr . RB Block_Stmt ELSE Block_Stmt  (11)
+
+	RB  shift 92
+	.  error
+
+
+state 60
+	For_First : TYPE . Assignment_list  (34)
+
+	ID  shift 31
+	STAR  shift 19
+	.  error
+
+	Initializer  goto 61
+	Assignment_list  goto 93
+	direct_declarator  goto 24
+	Declarator  goto 64
+
+
+state 61
+	Assignment_list : Initializer .  (21)
+
+	.  reduce 21
+
+
+state 62
+	Assignment_list : Assignment_list . COMMA Initializer  (22)
+	For_First : Assignment_list .  (35)
+
+	COMMA  shift 94
+	SEM  reduce 35
+
+
+state 63
+	Stmt : FOR LB For_First . SEM For_Second SEM For_Third RB Block_Stmt  (15)
+
+	SEM  shift 95
+	.  error
+
+
+state 64
+	Initializer : Declarator . EQ Expr  (32)
+
+	EQ  shift 76
+	.  error
+
+
+state 65
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+	Factor : LB Expr . RB  (69)
+
+	DEC  shift 67
+	ADD  shift 68
+	RB  shift 96
+	.  error
+
+
+state 66
+	Stmt : RETURN Expr SEM .  (12)
+
+	.  reduce 12
+
+
+state 67
+	Expr : Expr DEC . Term  (61)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Term  goto 97
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 68
+	Expr : Expr ADD . Term  (60)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Term  goto 98
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 69
+	Term : Term DIV . unary_expr  (64)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 99
+	unary_operator  goto 43
+
+
+state 70
+	Term : Term STAR . unary_expr  (63)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 100
+	unary_operator  goto 43
+
+
+state 71
+	Term : Term MOD . unary_expr  (65)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 101
+	unary_operator  goto 43
+
+
+state 72
+	unary_expr : unary_operator unary_expr .  (54)
+
+	.  reduce 54
+
+
+state 73
+	POW : POW EXP . unary_expr  (68)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 102
+	unary_operator  goto 43
+
+
+state 74
+	Declaration_stmt : TYPE Initial_declaration_list SEM .  (33)
+
+	.  reduce 33
+
+
+state 75
+	Initial_declaration_list : Initial_declaration_list COMMA . Init_declarator  (29)
+
+	ID  shift 31
+	STAR  shift 19
+	.  error
+
+	Initializer  goto 45
+	Init_declarator  goto 103
+	direct_declarator  goto 24
+	Declarator  goto 48
+
+
+state 76
+	Initializer : Declarator EQ . Expr  (32)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 104
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+77: shift/reduce conflict (shift 105, reduce 23) on RB
+state 77
+	Stmt : ID LB ID . RB SEM  (19)
+	direct_declarator : ID .  (23)
+
+	RB  shift 105
+	DEC  reduce 23
+	ADD  reduce 23
+	DIV  reduce 23
+	STAR  reduce 23
+	MOD  reduce 23
+	EXP  reduce 23
+	MLB  reduce 23
+
+
+state 78
+	Stmt : ID LB Expr . RB SEM  (18)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	RB  shift 106
+	.  error
+
+
+state 79
+	direct_declarator : direct_declarator MLB NUMBER . MRB  (25)
+
+	MRB  shift 107
+	.  error
+
+
+state 80
+	direct_declarator : direct_declarator MLB MRB .  (24)
+
+	.  reduce 24
+
+
+state 81
+	Assignment_Stmt : Declarator EQ Expr . SEM  (20)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	SEM  shift 108
+	DEC  shift 67
+	ADD  shift 68
+	.  error
+
+
+state 82
+	Bool : Expr LT . Expr  (46)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 109
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 83
+	Bool : Expr LE . Expr  (47)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 110
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 84
+	Bool : Expr GT . Expr  (48)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 111
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 85
+	Bool : Expr GE . Expr  (49)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 112
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 86
+	Bool : Expr EQUEL . Expr  (50)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 113
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 87
+	Bool : Expr NE . Expr  (51)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Expr  goto 114
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 88
+	Stmt : WHILE LB Bool_expr RB . Block_Stmt  (13)
+
+	WHILE  shift 12
+	DO  shift 13
+	IF  shift 14
+	FOR  shift 15
+	RETURN  shift 16
+	TYPE  shift 17
+	ID  shift 18
+	STAR  shift 19
+	BLB  shift 9
+	.  error
+
+	Block  goto 115
+	Stmt  goto 116
+	Declaration_stmt  goto 22
+	Block_Stmt  goto 117
+	Assignment_Stmt  goto 23
+	direct_declarator  goto 24
+	Declarator  goto 25
+
+
+state 89
+	logical_and_expr : logical_and_expr AND . Bool  (42)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Bool  goto 118
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+
+
+state 90
+	logical_or_expr : logical_or_expr OR . logical_and_expr  (44)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Bool  goto 53
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+	logical_and_expr  goto 119
+
+
+state 91
+	Stmt : DO Block WHILE LB . Bool_expr RB SEM  (14)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	.  error
+
+	Bool  goto 53
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+	Bool_expr  goto 120
+	logical_and_expr  goto 56
+	logical_or_expr  goto 57
+
+
+state 92
+	Stmt : IF LB Bool_expr RB . Block_Stmt  (10)
+	Stmt : IF LB Bool_expr RB . Block_Stmt ELSE Block_Stmt  (11)
+
+	WHILE  shift 12
+	DO  shift 13
+	IF  shift 14
+	FOR  shift 15
+	RETURN  shift 16
+	TYPE  shift 17
+	ID  shift 18
+	STAR  shift 19
+	BLB  shift 9
+	.  error
+
+	Block  goto 115
+	Stmt  goto 116
+	Declaration_stmt  goto 22
+	Block_Stmt  goto 121
+	Assignment_Stmt  goto 23
+	direct_declarator  goto 24
+	Declarator  goto 25
+
+
+state 93
+	Assignment_list : Assignment_list . COMMA Initializer  (22)
+	For_First : TYPE Assignment_list .  (34)
+
+	COMMA  shift 94
+	SEM  reduce 34
+
+
+state 94
+	Assignment_list : Assignment_list COMMA . Initializer  (22)
+
+	ID  shift 31
+	STAR  shift 19
+	.  error
+
+	Initializer  goto 122
+	direct_declarator  goto 24
+	Declarator  goto 64
+
+
+state 95
+	Stmt : FOR LB For_First SEM . For_Second SEM For_Third RB Block_Stmt  (15)
+	For_Second : .  (38)
+
+	SINGNALAND  shift 30
+	ID  shift 31
+	NUMBER  shift 32
+	DEC  shift 33
+	ADD  shift 34
+	STAR  shift 35
+	NOT  shift 36
+	LB  shift 37
+	SEM  reduce 38
+
+	Bool  goto 53
+	Expr  goto 54
+	Term  goto 39
+	Factor  goto 40
+	For_Second  goto 123
+	direct_declarator  goto 24
+	Declarator  goto 41
+	unary_expr  goto 42
+	unary_operator  goto 43
+	POW  goto 44
+	Bool_expr  goto 124
+	logical_and_expr  goto 56
+	logical_or_expr  goto 57
+
+
+state 96
+	Factor : LB Expr RB .  (69)
+
+	.  reduce 69
+
+
+state 97
+	Expr : Expr DEC Term .  (61)
+	Term : Term . STAR unary_expr  (63)
+	Term : Term . DIV unary_expr  (64)
+	Term : Term . MOD unary_expr  (65)
+
+	DIV  shift 69
+	STAR  shift 70
+	MOD  shift 71
+	SEM  reduce 61
+	COMMA  reduce 61
+	OR  reduce 61
+	AND  reduce 61
+	LT  reduce 61
+	LE  reduce 61
+	GT  reduce 61
+	GE  reduce 61
+	EQUEL  reduce 61
+	NE  reduce 61
+	DEC  reduce 61
+	ADD  reduce 61
+	RB  reduce 61
+
+
+state 98
+	Expr : Expr ADD Term .  (60)
+	Term : Term . STAR unary_expr  (63)
+	Term : Term . DIV unary_expr  (64)
+	Term : Term . MOD unary_expr  (65)
+
+	DIV  shift 69
+	STAR  shift 70
+	MOD  shift 71
+	SEM  reduce 60
+	COMMA  reduce 60
+	OR  reduce 60
+	AND  reduce 60
+	LT  reduce 60
+	LE  reduce 60
+	GT  reduce 60
+	GE  reduce 60
+	EQUEL  reduce 60
+	NE  reduce 60
+	DEC  reduce 60
+	ADD  reduce 60
+	RB  reduce 60
+
+
+state 99
+	Term : Term DIV unary_expr .  (64)
+
+	.  reduce 64
+
+
+state 100
+	Term : Term STAR unary_expr .  (63)
+
+	.  reduce 63
+
+
+state 101
+	Term : Term MOD unary_expr .  (65)
+
+	.  reduce 65
+
+
+state 102
+	POW : POW EXP unary_expr .  (68)
+
+	.  reduce 68
+
+
+state 103
+	Initial_declaration_list : Initial_declaration_list COMMA Init_declarator .  (29)
+
+	.  reduce 29
+
+
+state 104
+	Initializer : Declarator EQ Expr .  (32)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 32
+	COMMA  reduce 32
+	RB  reduce 32
+
+
+state 105
+	Stmt : ID LB ID RB . SEM  (19)
+
+	SEM  shift 125
+	.  error
+
+
+state 106
+	Stmt : ID LB Expr RB . SEM  (18)
+
+	SEM  shift 126
+	.  error
+
+
+state 107
+	direct_declarator : direct_declarator MLB NUMBER MRB .  (25)
+
+	.  reduce 25
+
+
+state 108
+	Assignment_Stmt : Declarator EQ Expr SEM .  (20)
+
+	.  reduce 20
+
+
+state 109
+	Bool : Expr LT Expr .  (46)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 46
+	OR  reduce 46
+	AND  reduce 46
+	RB  reduce 46
+
+
+state 110
+	Bool : Expr LE Expr .  (47)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 47
+	OR  reduce 47
+	AND  reduce 47
+	RB  reduce 47
+
+
+state 111
+	Bool : Expr GT Expr .  (48)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 48
+	OR  reduce 48
+	AND  reduce 48
+	RB  reduce 48
+
+
+state 112
+	Bool : Expr GE Expr .  (49)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 49
+	OR  reduce 49
+	AND  reduce 49
+	RB  reduce 49
+
+
+state 113
+	Bool : Expr EQUEL Expr .  (50)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 50
+	OR  reduce 50
+	AND  reduce 50
+	RB  reduce 50
+
+
+state 114
+	Bool : Expr NE Expr .  (51)
+	Expr : Expr . ADD Term  (60)
+	Expr : Expr . DEC Term  (61)
+
+	DEC  shift 67
+	ADD  shift 68
+	SEM  reduce 51
+	OR  reduce 51
+	AND  reduce 51
+	RB  reduce 51
+
+
+state 115
+	Block_Stmt : Block .  (6)
+
+	.  reduce 6
+
+
+state 116
+	Block_Stmt : Stmt .  (7)
+
+	.  reduce 7
+
+
+state 117
+	Stmt : WHILE LB Bool_expr RB Block_Stmt .  (13)
+
+	.  reduce 13
+
+
+state 118
+	logical_and_expr : logical_and_expr AND Bool .  (42)
+
+	.  reduce 42
+
+
+state 119
+	logical_and_expr : logical_and_expr . AND Bool  (42)
+	logical_or_expr : logical_or_expr OR logical_and_expr .  (44)
+
+	AND  shift 89
+	SEM  reduce 44
+	OR  reduce 44
+	RB  reduce 44
+
+
+state 120
+	Stmt : DO Block WHILE LB Bool_expr . RB SEM  (14)
+
+	RB  shift 127
+	.  error
+
+
+state 121
+	Stmt : IF LB Bool_expr RB Block_Stmt .  (10)
+	Stmt : IF LB Bool_expr RB Block_Stmt . ELSE Block_Stmt  (11)
+
+	ELSE  shift 128
+	WHILE  reduce 10
+	DO  reduce 10
+	IF  reduce 10
+	FOR  reduce 10
+	RETURN  reduce 10
+	TYPE  reduce 10
+	ID  reduce 10
+	STAR  reduce 10
+	BRB  reduce 10
+
+
+state 122
+	Assignment_list : Assignment_list COMMA Initializer .  (22)
+
+	.  reduce 22
+
+
+state 123
+	Stmt : FOR LB For_First SEM For_Second . SEM For_Third RB Block_Stmt  (15)
+
+	SEM  shift 129
+	.  error
+
+
+state 124
+	For_Second : Bool_expr .  (37)
+
+	.  reduce 37
+
+
+state 125
+	Stmt : ID LB ID RB SEM .  (19)
+
+	.  reduce 19
+
+
+state 126
+	Stmt : ID LB Expr RB SEM .  (18)
+
+	.  reduce 18
+
+
+state 127
+	Stmt : DO Block WHILE LB Bool_expr RB . SEM  (14)
+
+	SEM  shift 130
+	.  error
+
+
+state 128
+	Stmt : IF LB Bool_expr RB Block_Stmt ELSE . Block_Stmt  (11)
+
+	WHILE  shift 12
+	DO  shift 13
+	IF  shift 14
+	FOR  shift 15
+	RETURN  shift 16
+	TYPE  shift 17
+	ID  shift 18
+	STAR  shift 19
+	BLB  shift 9
+	.  error
+
+	Block  goto 115
+	Stmt  goto 116
+	Declaration_stmt  goto 22
+	Block_Stmt  goto 131
+	Assignment_Stmt  goto 23
+	direct_declarator  goto 24
+	Declarator  goto 25
+
+
+state 129
+	Stmt : FOR LB For_First SEM For_Second SEM . For_Third RB Block_Stmt  (15)
+	For_Third : .  (40)
+
+	ID  shift 31
+	STAR  shift 19
+	RB  reduce 40
+
+	Initializer  goto 61
+	Assignment_list  goto 132
+	For_Third  goto 133
+	direct_declarator  goto 24
+	Declarator  goto 64
+
+
+state 130
+	Stmt : DO Block WHILE LB Bool_expr RB SEM .  (14)
+
+	.  reduce 14
+
+
+state 131
+	Stmt : IF LB Bool_expr RB Block_Stmt ELSE Block_Stmt .  (11)
+
+	.  reduce 11
+
+
+state 132
+	Assignment_list : Assignment_list . COMMA Initializer  (22)
+	For_Third : Assignment_list .  (39)
+
+	COMMA  shift 94
+	RB  reduce 39
+
+
+state 133
+	Stmt : FOR LB For_First SEM For_Second SEM For_Third . RB Block_Stmt  (15)
+
+	RB  shift 134
+	.  error
+
+
+state 134
+	Stmt : FOR LB For_First SEM For_Second SEM For_Third RB . Block_Stmt  (15)
+
+	WHILE  shift 12
+	DO  shift 13
+	IF  shift 14
+	FOR  shift 15
+	RETURN  shift 16
+	TYPE  shift 17
+	ID  shift 18
+	STAR  shift 19
+	BLB  shift 9
+	.  error
+
+	Block  goto 115
+	Stmt  goto 116
+	Declaration_stmt  goto 22
+	Block_Stmt  goto 135
+	Assignment_Stmt  goto 23
+	direct_declarator  goto 24
+	Declarator  goto 25
+
+
+state 135
+	Stmt : FOR LB For_First SEM For_Second SEM For_Third RB Block_Stmt .  (15)
+
+	.  reduce 15
+
+
+State 35 contains 1 shift/reduce conflict.
+State 77 contains 1 shift/reduce conflict.
+
+
+46 terminals, 29 nonterminals
+72 grammar rules, 136 states
