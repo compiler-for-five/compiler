@@ -1,4 +1,5 @@
 #include "AST.h"
+#include "symbol.h"
 #include <cstring>
 #include <typeinfo>
 #include <stdlib.h>
@@ -90,6 +91,12 @@ void DefVarASTNode::print_info(int depth)
     cout << "Variation define.";
     if (type == symbolType::integer)
         cout << "integer ";
+    else if (type == symbolType::pointer)
+        std::cout << "pointer ";
+    else if (type == symbolType::Array){
+        std::cout << "array ";
+        cout<<this->arrayLength<<" ";
+    }
     cout << this->value << endl;
 }
 
@@ -103,6 +110,13 @@ void DefVarASTNode::set_type(char *type)
     else if (strcmp(type, "void") == 0)
     {
         varType = symbolType::Void;
+    }
+    else if (strcmp(type, "integer pointer") == 0)
+    {
+        varType = symbolType::pointer;
+    }
+    else if (strcmp(type, "array") == 0) {
+        varType = symbolType::Array;
     }
     if (this->type == symbolType::unset) {
         this->type = varType;
@@ -129,7 +143,7 @@ LiteralASTNode::LiteralASTNode(char *value) : AST(value, ASTNodeType::literal)
 
 void LiteralASTNode::print_info(int depth)
 {
-    cout << "var: " << stoi(this->value) << endl;
+    cout << "literal: " << stoi(this->value) << endl;
 }
 
 LoopASTNode::LoopASTNode(char *value,
@@ -139,8 +153,12 @@ LoopASTNode::LoopASTNode(char *value,
     : AST(value, ASTNodeType::loop)
 {
     this->loopType = type;
-    this->add_child_node(body);
-    if (condition != NULL) condition->set_parent(this);
+    if (condition != NULL) {
+        this->add_child_node(condition);
+        condition->add_peer_node(body);
+    }
+    else
+        this->add_child_node(body);
     this->condition = condition;
     this->declare = NULL;
     this->action = NULL;
@@ -155,13 +173,38 @@ LoopASTNode::LoopASTNode(char *value,
     : AST(value, ASTNodeType::loop)
 {
     this->loopType = type;
-    this->add_child_node(body);
     this->condition = condition;
     this->declare = declare;
     this->action = action;
-    if (condition != NULL) condition->set_parent(this);
-    if (declare != NULL) declare->set_parent(this);
-    if (action != NULL) action->set_parent(this);
+    if (declare != NULL) {
+        declare->set_parent(this);
+        this->add_child_node(declare);
+    }
+    if (condition != NULL) {
+        condition->set_parent(this);
+        if(this->child->get_last_peer_node() != NULL)
+            this->child->get_last_peer_node()->add_peer_node(condition);
+        else
+        {
+            this->add_child_node(condition);
+        }
+        
+    }
+    if (action != NULL) {
+        action->set_parent(this);
+        if(this->child->get_last_peer_node() != NULL)
+            this->child->get_last_peer_node()->add_peer_node(action);
+        else
+        {
+            this->add_child_node(action);
+        }
+    }
+    if(this->child->get_last_peer_node() != NULL)
+        this->child->get_last_peer_node()->add_peer_node(body);
+    else
+    {
+        this->add_child_node(body);
+    }
 }
 
 void LoopASTNode::print_info(int depth)
@@ -169,21 +212,10 @@ void LoopASTNode::print_info(int depth)
     if (this->loopType == LoopType::_for)
     {
         cout << "FOR" << endl;
-        // cout << "DEC:::::";
-
-        AST::print_tree(this->declare, depth + 1);
-        // cout << "COND:::::";
-
-        AST::print_tree(this->condition, depth + 1);
-        // cout << "ACTION:::::";
-
-        AST::print_tree(this->action, depth + 1);
     }
     else
     {
         cout << "WHILE" << endl;
-        cout << (int)this->child->nodeType << endl;
-        AST::print_tree(this->condition, depth + 1);
     }
 }
 
@@ -206,10 +238,13 @@ SelectASTNode::SelectASTNode(char *value, SelectType type, AST *body,
     this->body = body;
     this->body->set_parent(this);
     this->condition = condition;
+    this->add_child_node(condition);
     this->condition->set_parent(this);
+    condition->add_peer_node(body);
     this->elseStmt = elseStmt;
     if (elseStmt) {
         this->elseStmt->set_parent(this);
+        this->child->get_last_peer_node()->add_peer_node(elseStmt);
     }
 }
 
@@ -218,15 +253,6 @@ void SelectASTNode::print_info(int depth)
     if (this->selectType == SelectType::_if)
     {
         cout << "IF" << endl;
-        AST::print_tree(this->condition, depth + 1);
-        AST::print_tree(this->body, depth + 1);
-        if (this->elseStmt != NULL)
-        {
-            for (int i = 0; i < depth; i++)
-                cout << " ";
-            cout << "ELSE" << endl;
-            AST::print_tree(this->elseStmt, depth + 1);
-        }
     }
 }
 
@@ -314,16 +340,27 @@ void CallFunASTNode::print_info(int depth) {
     }
 }
 
+VarASTNode::VarASTNode(char *value, AST *node)
+    : AST(value, ASTNodeType::assignVar)
+{
+    this->add_child_node(node);
+}
+
+void VarASTNode::print_info(int depth)
+{
+    cout << "Variation " << this->value << endl;
+}
+
+
+
 int main(int argc,char* argv[])
 {
-    AST* root;
     cout<<"begin"<<endl;
     FILE* file = fopen(argv[1], "r");
     yyin = file;
     do {
 		yyparse();
 	} while(!feof(yyin));
-    root->print_tree(root, 0);
 }
 
 int yyerror(char *s)
