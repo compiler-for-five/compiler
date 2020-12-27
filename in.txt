@@ -1,20 +1,12 @@
 int main() {
-    int a = 1, b;
-    int x , y, z;
-    int k = 1, j = 2;
-    int c = 2;
-    int i = 0;
-    print_int(i);
-    for(i=0,j=5;i<10;i++,j--) {
-        if(a<5) a = a+1;
-        else if(a>=5) {
-            a=a+2;
-            a--;
-        }
+    int a[10];
+    int i=0;
+    for (i; i < 10; i=i+1) {
+        a[i] = i;
     }
-    while(a<40) {
-        a++;
+    i = 0;
+    for (i; i < 10; i=i+1) {
+        print_int(a[i]);
     }
-    scan_int(y);
     return 0;
 }

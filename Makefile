@@ -1,2 +1,5 @@
-result:test.y test.l test.h;bison -d test.y;flex test.l;gcc test.tab.c lex.yy.c test.c;byacc -vd test.y
-
+result:yacc.y lex.l AST.h symbol.h;
+	bison -o yacc.tab.c yacc.y -d
+	flex -o lex.yy.c lex.l
+	byacc -vd yacc.y
+	g++ -o parser yacc.tab.c lex.yy.c AST.cpp symbol.cpp

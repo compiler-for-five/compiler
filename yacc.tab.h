@@ -34,8 +34,8 @@
 /* Undocumented macros, especially those whose name start with YY_,
    are private implementation details.  Do not rely on them.  */
 
-#ifndef YY_YY_TEST_TAB_H_INCLUDED
-# define YY_YY_TEST_TAB_H_INCLUDED
+#ifndef YY_YY_YACC_TAB_H_INCLUDED
+# define YY_YY_YACC_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -49,52 +49,50 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    LT = 258,
-    LE = 259,
-    GT = 260,
-    GE = 261,
-    EQ = 262,
-    ADD = 263,
-    DEC = 264,
-    STAR = 265,
-    DIV = 266,
-    SEM = 267,
-    LB = 268,
-    RB = 269,
-    MLB = 270,
-    MRB = 271,
-    BLB = 272,
-    BRB = 273,
-    COMMA = 274,
+    SEM = 258,
+    COMMA = 259,
+    delim = 260,
+    whitespace = 261,
+    WHILE = 262,
+    DO = 263,
+    IF = 264,
+    THEN = 265,
+    ELSE = 266,
+    FOR = 267,
+    NEWLINE = 268,
+    ERRORCHAR = 269,
+    RETURN = 270,
+    IFX = 271,
+    SINGNALAND = 272,
+    TYPE = 273,
+    VOID = 274,
     ID = 275,
     NUMBER = 276,
-    delim = 277,
-    whitespace = 278,
-    Func_print = 279,
-    Func_scan = 280,
-    EQUEL = 281,
-    MOD = 282,
-    EXP = 283,
-    NE = 284,
-    AND = 285,
-    OR = 286,
-    NOT = 287,
-    WHILE = 288,
-    DO = 289,
-    IF = 290,
-    THEN = 291,
-    ELSE = 292,
-    FOR = 293,
-    NEWLINE = 294,
-    ERRORCHAR = 295,
-    VOID = 296,
-    MAIN = 297,
-    TYPE = 298,
-    RETURN = 299,
-    IFX = 300,
-    SINGNALAND = 301,
-    UMINUS = 302,
-    UPLUS = 303
+    MAIN = 277,
+    EQ = 278,
+    OR = 279,
+    AND = 280,
+    LT = 281,
+    LE = 282,
+    GT = 283,
+    GE = 284,
+    EQUEL = 285,
+    NE = 286,
+    DEC = 287,
+    ADD = 288,
+    DIV = 289,
+    STAR = 290,
+    MOD = 291,
+    EXP = 292,
+    NOT = 293,
+    LB = 294,
+    RB = 295,
+    MLB = 296,
+    MRB = 297,
+    BLB = 298,
+    BRB = 299,
+    UMINUS = 300,
+    UPLUS = 301
   };
 #endif
 
@@ -102,11 +100,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 7 "test.y"
+#line 16 "yacc.y"
 
-struct ast* a;
+struct AST* a;
+char* str;
 
-#line 110 "test.tab.h"
+#line 109 "yacc.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -119,4 +118,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_TEST_TAB_H_INCLUDED  */
+#endif /* !YY_YY_YACC_TAB_H_INCLUDED  */
