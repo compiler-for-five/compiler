@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "AST.h"
+#include "symbol.h"
 #include <string.h>
 int yyerror(char *s);
 int yylex();
@@ -22,7 +23,7 @@ WHILE DO IF THEN ELSE FOR NEWLINE ERRORCHAR RETURN IFX SINGNALAND
 %type <str> RETYPE 
 %token <str> TYPE VOID ID NUMBER MAIN
 %type <a> Program Block Stmts Stmt Initializer Declaration_stmt Bool Expr Term Factor Block_Stmt Assignment_list
-For_First For_Second For_Third Assignment_Stmt Init_declarator Initial_declaration_list direct_declarator Declarator
+For_First For_Second For_Third Assignment_Stmt Init_declarator Initial_declaration_list Declarator
 unary_expr unary_operator POW Bool_expr logical_and_expr logical_or_expr
 /*priority*/
 %right EQ
@@ -43,6 +44,11 @@ Result:Program
         root = new RootASTNode();
         root->add_child_node($1);
         root->print_tree(root, 0);
+        SymbolTable* symbolTable = new SymbolTable(NULL, true);
+        //table->printSymbolTable();
+        //SymbolTable* table = NULL;
+        SymbolTable* table = symbolTable->buildSymbolTable(root);
+        table->printSymbolTable();
     }
     ;
 Program:RETYPE MAIN LB RB Block 
@@ -133,10 +139,24 @@ Stmt:IF LB Bool_expr RB Block_Stmt %prec IFX
         $$ = new CallFunASTNode($1, $3);
     }
     ;
-Assignment_Stmt:Declarator EQ Expr SEM 
+Assignment_Stmt:Expr EQ Expr SEM 
     {
-        $1->add_child_node($3);
-        $$ = $1;
+        AST* temp = NULL;
+        if ($1->nodeType == ASTNodeType::op) {
+            OperatorASTNode* left = (OperatorASTNode*)$1;
+            if (left->type == opType::GetArrayValue) {
+                temp = new OperatorASTNode((char*)"=", opType::AssignArray);
+            } else {
+                temp = new OperatorASTNode((char*)"=", opType::Assignop);
+            }
+        }
+        else {
+            temp = new OperatorASTNode((char*)"=", opType::Assignop);
+        }
+        temp->add_child_node($1);
+        $1->add_peer_node($3);
+        $3->set_parent(temp);
+        $$ = temp;
     }
     ;
 Assignment_list:Initializer 
@@ -149,35 +169,29 @@ Assignment_list:Initializer
         $$ = $1;
     }
 ;
-direct_declarator:ID 
+Declarator:STAR ID
+    {
+        DefVarASTNode* var = new DefVarASTNode((char*)$2);
+        var->set_type((char*)("integer pointer"));
+        $$ = var;
+    }
+    |ID 
     {
         $$ = new DefVarASTNode($1);
     }
-    |direct_declarator MLB MRB 
+    |ID MLB MRB 
     {
         DefVarASTNode* var = new DefVarASTNode((char*)$1);
         var->set_type((char*)("array"));
         var->set_array_length(NULL);
         $$ = var;
     }
-    |direct_declarator MLB NUMBER MRB 
+    |ID MLB NUMBER MRB 
     {
         DefVarASTNode* var = new DefVarASTNode((char*)$1);
         var->set_type((char*)("array"));
         var->set_array_length($3);
         $$ = var;
-    }
-    ;
-Declarator:STAR direct_declarator
-    {
-        AST* op = new OperatorASTNode((char*)"*", opType::GetValue);
-        AST* var = new DefVarASTNode((char*)$2);
-        op->add_child_node(var);
-        $$ = op;
-    }
-    |direct_declarator
-    {
-        $$ = $1;
     }
     ;
 Initial_declaration_list:Init_declarator 
@@ -208,20 +222,41 @@ Initializer:Declarator EQ Expr
 Declaration_stmt:TYPE Initial_declaration_list SEM 
     {
         DefVarASTNode* temp = (DefVarASTNode*)$2;
-        temp->set_type($1);
+        if(temp->type == symbolType::unset)
+            temp->set_type($1);
         $$ = temp;
     }
     ;
-For_First:TYPE Assignment_list 
-    {
-        DefVarASTNode* temp = (DefVarASTNode*)$2;
-        $1 = strdup($1);
-        temp->set_type($1);
-        $$ = temp;
-    }
-    |Assignment_list
+For_First:Expr
     {
         $$ = $1;
+    }
+    |TYPE Declarator EQ Expr
+    {
+        DefVarASTNode* temp = (DefVarASTNode*)$2;
+        if(temp->type == symbolType::unset)
+            temp->set_type($1);
+        $2->add_child_node($4);
+        $$ = temp;
+    }
+    |Expr EQ Expr
+    {
+        AST* temp = NULL;
+        if ($1->nodeType == ASTNodeType::op) {
+            OperatorASTNode* left = (OperatorASTNode*)$1;
+            if (left->type == opType::GetArrayValue) {
+                temp = new OperatorASTNode((char*)"=", opType::AssignArray);
+            } else {
+                temp = new OperatorASTNode((char*)"=", opType::Assignop);
+            }
+        }
+        else {
+            temp = new OperatorASTNode((char*)"=", opType::Assignop);
+        }
+        temp->add_child_node($1);
+        $1->add_peer_node($3);
+        $3->set_parent(temp);
+        $$ = temp;
     }
     | 
     {
@@ -237,9 +272,24 @@ For_Second:Bool_expr
         $$ = NULL;
     }
     ;
-For_Third:Assignment_list 
+For_Third:Expr EQ Expr
     {
-        $$ = $1;
+        AST* temp = NULL;
+        if ($1->nodeType == ASTNodeType::op) {
+            OperatorASTNode* left = (OperatorASTNode*)$1;
+            if (left->type == opType::GetArrayValue) {
+                temp = new OperatorASTNode((char*)"=", opType::AssignArray);
+            } else {
+                temp = new OperatorASTNode((char*)"=", opType::Assignop);
+            }
+        }
+        else {
+            temp = new OperatorASTNode((char*)"=", opType::Assignop);
+        }
+        temp->add_child_node($1);
+        $1->add_peer_node($3);
+        $3->set_parent(temp);
+        $$ = temp;
     }
     | 
     {
@@ -350,8 +400,8 @@ unary_operator:ADD %prec UPLUS
     }
     |SINGNALAND 
     {
-        AST* temp = new OperatorASTNode((char*)"&", opType::SingalAnd);
-        $$ = temp;
+        AST* op = new OperatorASTNode((char*)"&", opType::SingalAnd);
+        $$ = op;
     }
     |STAR 
     {
@@ -420,13 +470,21 @@ Factor:LB Expr RB
     {
         $$ = $2;
     }
-    |Declarator 
+    |ID //a
     {
-        $$ = $1;
+        $$ = new VarASTNode($1);
     }
     |NUMBER 
     {
         $$ = new LiteralASTNode($1);
+    }
+    |ID MLB Expr MRB //a[0]
+    {
+        AST* op = new OperatorASTNode((char*)"[]", opType::GetArrayValue);
+        AST* var = new VarASTNode((char*)$1);
+        op->add_child_node(var);
+        var->add_peer_node($3);
+        $$ = op;
     }
     ;
 %%

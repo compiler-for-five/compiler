@@ -1,3 +1,5 @@
+#ifndef AST_H
+#define AST_H
 #include<iostream>
 using namespace std;
 extern char *yytext;
@@ -61,7 +63,7 @@ public:
 class DefVarASTNode : public AST
 {
 public:
-    symbolType type;
+    symbolType type = symbolType::unset;
     int arrayLength;
     DefVarASTNode(char *value, AST *node = NULL);
     inline void setArrayType() { this->type = symbolType::Array; }
@@ -192,3 +194,12 @@ public:
     void print_info(int depth);
     inline AST *getVarList() { return this->varList; }
 };
+
+class VarASTNode : public AST
+{
+public:
+    VarASTNode(char *value, AST *node = NULL);
+    void print_info(int depth);
+};
+
+#endif
