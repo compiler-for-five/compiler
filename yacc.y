@@ -22,7 +22,7 @@ char* str;
 WHILE DO IF THEN ELSE FOR NEWLINE ERRORCHAR RETURN IFX SINGNALAND
 %type <str> RETYPE 
 %token <str> TYPE VOID ID NUMBER MAIN
-%type <a> Program Block Stmts Stmt Initializer Declaration_stmt Bool Expr Term Factor Block_Stmt Assignment_list
+%type <a> Program Block Stmts Stmt Initializer Declaration_stmt Bool Expr Term Factor Block_Stmt
 For_First For_Second For_Third Assignment_Stmt Init_declarator Initial_declaration_list Declarator
 unary_expr unary_operator POW Bool_expr logical_and_expr logical_or_expr
 /*priority*/
@@ -159,16 +159,6 @@ Assignment_Stmt:Expr EQ Expr SEM
         $$ = temp;
     }
     ;
-Assignment_list:Initializer 
-    {
-        $$ = $1;
-    }
-    |Assignment_list COMMA Initializer 
-    {
-        $1->get_last_peer_node()->add_peer_node($3);
-        $$ = $1;
-    }
-;
 Declarator:STAR ID
     {
         DefVarASTNode* var = new DefVarASTNode((char*)$2);

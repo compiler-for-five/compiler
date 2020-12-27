@@ -28,76 +28,73 @@
 
   20  Assignment_Stmt : Expr EQ Expr SEM
 
-  21  Assignment_list : Initializer
-  22                  | Assignment_list COMMA Initializer
+  21  Declarator : STAR ID
+  22             | ID
+  23             | ID MLB MRB
+  24             | ID MLB NUMBER MRB
 
-  23  Declarator : STAR ID
-  24             | ID
-  25             | ID MLB MRB
-  26             | ID MLB NUMBER MRB
+  25  Initial_declaration_list : Init_declarator
+  26                           | Initial_declaration_list COMMA Init_declarator
 
-  27  Initial_declaration_list : Init_declarator
-  28                           | Initial_declaration_list COMMA Init_declarator
+  27  Init_declarator : Declarator
+  28                  | Initializer
 
-  29  Init_declarator : Declarator
-  30                  | Initializer
+  29  Initializer : Declarator EQ Expr
 
-  31  Initializer : Declarator EQ Expr
+  30  Declaration_stmt : TYPE Initial_declaration_list SEM
 
-  32  Declaration_stmt : TYPE Initial_declaration_list SEM
+  31  For_First : Expr
+  32            | TYPE Declarator EQ Expr
+  33            | Expr EQ Expr
+  34            |
 
-  33  For_First : Expr
-  34            | TYPE Declarator EQ Expr
-  35            | Expr EQ Expr
-  36            |
+  35  For_Second : Bool_expr
+  36             |
 
-  37  For_Second : Bool_expr
-  38             |
+  37  For_Third : Expr EQ Expr
+  38            |
 
-  39  For_Third : Expr EQ Expr
-  40            |
+  39  logical_and_expr : Bool
+  40                   | logical_and_expr AND Bool
 
-  41  logical_and_expr : Bool
-  42                   | logical_and_expr AND Bool
+  41  logical_or_expr : logical_and_expr
+  42                  | logical_or_expr OR logical_and_expr
 
-  43  logical_or_expr : logical_and_expr
-  44                  | logical_or_expr OR logical_and_expr
+  43  Bool_expr : logical_or_expr
 
-  45  Bool_expr : logical_or_expr
+  44  Bool : Expr LT Expr
+  45       | Expr LE Expr
+  46       | Expr GT Expr
+  47       | Expr GE Expr
+  48       | Expr EQUEL Expr
+  49       | Expr NE Expr
+  50       | Expr
 
-  46  Bool : Expr LT Expr
-  47       | Expr LE Expr
-  48       | Expr GT Expr
-  49       | Expr GE Expr
-  50       | Expr EQUEL Expr
-  51       | Expr NE Expr
-  52       | Expr
+  51  unary_expr : Factor
+  52             | unary_operator unary_expr
 
-  53  unary_expr : Factor
-  54             | unary_operator unary_expr
+  53  unary_operator : ADD
+  54                 | DEC
+  55                 | NOT
+  56                 | SINGNALAND
+  57                 | STAR
 
-  55  unary_operator : ADD
-  56                 | DEC
-  57                 | NOT
-  58                 | SINGNALAND
-  59                 | STAR
+  58  Expr : Expr ADD Term
+  59       | Expr DEC Term
+  60       | Term
 
-  60  Expr : Expr ADD Term
-  61       | Expr DEC Term
-  62       | Term
+  61  Term : Term STAR unary_expr
+  62       | Term DIV unary_expr
+  63       | Term MOD unary_expr
+  64       | POW
 
-  63  Term : Term STAR unary_expr
-  64       | Term DIV unary_expr
-  65       | Term MOD unary_expr
-  66       | POW
+  65  POW : unary_expr
+  66      | POW EXP unary_expr
 
-  67  POW : unary_expr
-  68      | POW EXP unary_expr
-
-  69  Factor : LB Expr RB
-  70         | ID
-  71         | NUMBER
-  72         | ID MLB Expr MRB
+  67  Factor : LB Expr RB
+  68         | ID
+  69         | NUMBER
+  70         | ID MLB Expr MRB
 
 state 0
 	$accept : . Result $end  (0)
@@ -265,13 +262,13 @@ state 16
 
 
 state 17
-	unary_operator : SINGNALAND .  (58)
+	unary_operator : SINGNALAND .  (56)
 
-	.  reduce 58
+	.  reduce 56
 
 
 state 18
-	Declaration_stmt : TYPE . Initial_declaration_list SEM  (32)
+	Declaration_stmt : TYPE . Initial_declaration_list SEM  (30)
 
 	ID  shift 42
 	STAR  shift 43
@@ -286,52 +283,52 @@ state 18
 state 19
 	Stmt : ID . LB Expr RB SEM  (18)
 	Stmt : ID . LB ID RB SEM  (19)
-	Factor : ID .  (70)
-	Factor : ID . MLB Expr MRB  (72)
+	Factor : ID .  (68)
+	Factor : ID . MLB Expr MRB  (70)
 
 	LB  shift 48
 	MLB  shift 49
-	EQ  reduce 70
-	DEC  reduce 70
-	ADD  reduce 70
-	DIV  reduce 70
-	STAR  reduce 70
-	MOD  reduce 70
-	EXP  reduce 70
+	EQ  reduce 68
+	DEC  reduce 68
+	ADD  reduce 68
+	DIV  reduce 68
+	STAR  reduce 68
+	MOD  reduce 68
+	EXP  reduce 68
 
 
 state 20
-	Factor : NUMBER .  (71)
+	Factor : NUMBER .  (69)
 
-	.  reduce 71
+	.  reduce 69
 
 
 state 21
-	unary_operator : DEC .  (56)
+	unary_operator : DEC .  (54)
 
-	.  reduce 56
+	.  reduce 54
 
 
 state 22
-	unary_operator : ADD .  (55)
+	unary_operator : ADD .  (53)
 
-	.  reduce 55
+	.  reduce 53
 
 
 state 23
-	unary_operator : STAR .  (59)
-
-	.  reduce 59
-
-
-state 24
-	unary_operator : NOT .  (57)
+	unary_operator : STAR .  (57)
 
 	.  reduce 57
 
 
+state 24
+	unary_operator : NOT .  (55)
+
+	.  reduce 55
+
+
 state 25
-	Factor : LB . Expr RB  (69)
+	Factor : LB . Expr RB  (67)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -371,8 +368,8 @@ state 28
 
 state 29
 	Assignment_Stmt : Expr . EQ Expr SEM  (20)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	EQ  shift 51
 	DEC  shift 52
@@ -381,35 +378,35 @@ state 29
 
 
 state 30
-	Expr : Term .  (62)
-	Term : Term . STAR unary_expr  (63)
-	Term : Term . DIV unary_expr  (64)
-	Term : Term . MOD unary_expr  (65)
+	Expr : Term .  (60)
+	Term : Term . STAR unary_expr  (61)
+	Term : Term . DIV unary_expr  (62)
+	Term : Term . MOD unary_expr  (63)
 
 	DIV  shift 54
 	STAR  shift 55
 	MOD  shift 56
-	SEM  reduce 62
-	COMMA  reduce 62
-	EQ  reduce 62
-	OR  reduce 62
-	AND  reduce 62
-	LT  reduce 62
-	LE  reduce 62
-	GT  reduce 62
-	GE  reduce 62
-	EQUEL  reduce 62
-	NE  reduce 62
-	DEC  reduce 62
-	ADD  reduce 62
-	RB  reduce 62
-	MRB  reduce 62
+	SEM  reduce 60
+	COMMA  reduce 60
+	EQ  reduce 60
+	OR  reduce 60
+	AND  reduce 60
+	LT  reduce 60
+	LE  reduce 60
+	GT  reduce 60
+	GE  reduce 60
+	EQUEL  reduce 60
+	NE  reduce 60
+	DEC  reduce 60
+	ADD  reduce 60
+	RB  reduce 60
+	MRB  reduce 60
 
 
 state 31
-	unary_expr : Factor .  (53)
+	unary_expr : Factor .  (51)
 
-	.  reduce 53
+	.  reduce 51
 
 
 state 32
@@ -419,13 +416,13 @@ state 32
 
 
 state 33
-	POW : unary_expr .  (67)
+	POW : unary_expr .  (65)
 
-	.  reduce 67
+	.  reduce 65
 
 
 state 34
-	unary_expr : unary_operator . unary_expr  (54)
+	unary_expr : unary_operator . unary_expr  (52)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -443,28 +440,28 @@ state 34
 
 
 state 35
-	Term : POW .  (66)
-	POW : POW . EXP unary_expr  (68)
+	Term : POW .  (64)
+	POW : POW . EXP unary_expr  (66)
 
 	EXP  shift 58
-	SEM  reduce 66
-	COMMA  reduce 66
-	EQ  reduce 66
-	OR  reduce 66
-	AND  reduce 66
-	LT  reduce 66
-	LE  reduce 66
-	GT  reduce 66
-	GE  reduce 66
-	EQUEL  reduce 66
-	NE  reduce 66
-	DEC  reduce 66
-	ADD  reduce 66
-	DIV  reduce 66
-	STAR  reduce 66
-	MOD  reduce 66
-	RB  reduce 66
-	MRB  reduce 66
+	SEM  reduce 64
+	COMMA  reduce 64
+	EQ  reduce 64
+	OR  reduce 64
+	AND  reduce 64
+	LT  reduce 64
+	LE  reduce 64
+	GT  reduce 64
+	GE  reduce 64
+	EQUEL  reduce 64
+	NE  reduce 64
+	DEC  reduce 64
+	ADD  reduce 64
+	DIV  reduce 64
+	STAR  reduce 64
+	MOD  reduce 64
+	RB  reduce 64
+	MRB  reduce 64
 
 
 state 36
@@ -527,7 +524,7 @@ state 38
 
 state 39
 	Stmt : FOR LB . For_First SEM For_Second SEM For_Third RB Block_Stmt  (15)
-	For_First : .  (36)
+	For_First : .  (34)
 
 	SINGNALAND  shift 17
 	TYPE  shift 66
@@ -538,7 +535,7 @@ state 39
 	STAR  shift 23
 	NOT  shift 24
 	LB  shift 25
-	SEM  reduce 36
+	SEM  reduce 34
 
 	Expr  goto 67
 	Term  goto 30
@@ -550,35 +547,35 @@ state 39
 
 
 state 40
-	Factor : ID .  (70)
-	Factor : ID . MLB Expr MRB  (72)
+	Factor : ID .  (68)
+	Factor : ID . MLB Expr MRB  (70)
 
 	MLB  shift 49
-	SEM  reduce 70
-	COMMA  reduce 70
-	EQ  reduce 70
-	OR  reduce 70
-	AND  reduce 70
-	LT  reduce 70
-	LE  reduce 70
-	GT  reduce 70
-	GE  reduce 70
-	EQUEL  reduce 70
-	NE  reduce 70
-	DEC  reduce 70
-	ADD  reduce 70
-	DIV  reduce 70
-	STAR  reduce 70
-	MOD  reduce 70
-	EXP  reduce 70
-	RB  reduce 70
-	MRB  reduce 70
+	SEM  reduce 68
+	COMMA  reduce 68
+	EQ  reduce 68
+	OR  reduce 68
+	AND  reduce 68
+	LT  reduce 68
+	LE  reduce 68
+	GT  reduce 68
+	GE  reduce 68
+	EQUEL  reduce 68
+	NE  reduce 68
+	DEC  reduce 68
+	ADD  reduce 68
+	DIV  reduce 68
+	STAR  reduce 68
+	MOD  reduce 68
+	EXP  reduce 68
+	RB  reduce 68
+	MRB  reduce 68
 
 
 state 41
 	Stmt : RETURN Expr . SEM  (12)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	SEM  shift 69
 	DEC  shift 52
@@ -587,38 +584,38 @@ state 41
 
 
 state 42
-	Declarator : ID .  (24)
-	Declarator : ID . MLB MRB  (25)
-	Declarator : ID . MLB NUMBER MRB  (26)
+	Declarator : ID .  (22)
+	Declarator : ID . MLB MRB  (23)
+	Declarator : ID . MLB NUMBER MRB  (24)
 
 	MLB  shift 70
-	SEM  reduce 24
-	COMMA  reduce 24
-	EQ  reduce 24
+	SEM  reduce 22
+	COMMA  reduce 22
+	EQ  reduce 22
 
 
 state 43
-	Declarator : STAR . ID  (23)
+	Declarator : STAR . ID  (21)
 
 	ID  shift 71
 	.  error
 
 
 state 44
-	Init_declarator : Initializer .  (30)
+	Init_declarator : Initializer .  (28)
 
-	.  reduce 30
+	.  reduce 28
 
 
 state 45
-	Initial_declaration_list : Init_declarator .  (27)
+	Initial_declaration_list : Init_declarator .  (25)
 
-	.  reduce 27
+	.  reduce 25
 
 
 state 46
-	Initial_declaration_list : Initial_declaration_list . COMMA Init_declarator  (28)
-	Declaration_stmt : TYPE Initial_declaration_list . SEM  (32)
+	Initial_declaration_list : Initial_declaration_list . COMMA Init_declarator  (26)
+	Declaration_stmt : TYPE Initial_declaration_list . SEM  (30)
 
 	SEM  shift 72
 	COMMA  shift 73
@@ -626,12 +623,12 @@ state 46
 
 
 state 47
-	Init_declarator : Declarator .  (29)
-	Initializer : Declarator . EQ Expr  (31)
+	Init_declarator : Declarator .  (27)
+	Initializer : Declarator . EQ Expr  (29)
 
 	EQ  shift 74
-	SEM  reduce 29
-	COMMA  reduce 29
+	SEM  reduce 27
+	COMMA  reduce 27
 
 
 state 48
@@ -657,7 +654,7 @@ state 48
 
 
 state 49
-	Factor : ID MLB . Expr MRB  (72)
+	Factor : ID MLB . Expr MRB  (70)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -678,9 +675,9 @@ state 49
 
 
 state 50
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
-	Factor : LB Expr . RB  (69)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
+	Factor : LB Expr . RB  (67)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -710,7 +707,7 @@ state 51
 
 
 state 52
-	Expr : Expr DEC . Term  (61)
+	Expr : Expr DEC . Term  (59)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -730,7 +727,7 @@ state 52
 
 
 state 53
-	Expr : Expr ADD . Term  (60)
+	Expr : Expr ADD . Term  (58)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -750,7 +747,7 @@ state 53
 
 
 state 54
-	Term : Term DIV . unary_expr  (64)
+	Term : Term DIV . unary_expr  (62)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -768,7 +765,7 @@ state 54
 
 
 state 55
-	Term : Term STAR . unary_expr  (63)
+	Term : Term STAR . unary_expr  (61)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -786,7 +783,7 @@ state 55
 
 
 state 56
-	Term : Term MOD . unary_expr  (65)
+	Term : Term MOD . unary_expr  (63)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -804,13 +801,13 @@ state 56
 
 
 state 57
-	unary_expr : unary_operator unary_expr .  (54)
+	unary_expr : unary_operator unary_expr .  (52)
 
-	.  reduce 54
+	.  reduce 52
 
 
 state 58
-	POW : POW EXP . unary_expr  (68)
+	POW : POW EXP . unary_expr  (66)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -828,21 +825,21 @@ state 58
 
 
 state 59
-	logical_and_expr : Bool .  (41)
+	logical_and_expr : Bool .  (39)
 
-	.  reduce 41
+	.  reduce 39
 
 
 state 60
-	Bool : Expr . LT Expr  (46)
-	Bool : Expr . LE Expr  (47)
-	Bool : Expr . GT Expr  (48)
-	Bool : Expr . GE Expr  (49)
-	Bool : Expr . EQUEL Expr  (50)
-	Bool : Expr . NE Expr  (51)
-	Bool : Expr .  (52)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Bool : Expr . LT Expr  (44)
+	Bool : Expr . LE Expr  (45)
+	Bool : Expr . GT Expr  (46)
+	Bool : Expr . GE Expr  (47)
+	Bool : Expr . EQUEL Expr  (48)
+	Bool : Expr . NE Expr  (49)
+	Bool : Expr .  (50)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	LT  shift 86
 	LE  shift 87
@@ -852,10 +849,10 @@ state 60
 	NE  shift 91
 	DEC  shift 52
 	ADD  shift 53
-	SEM  reduce 52
-	OR  reduce 52
-	AND  reduce 52
-	RB  reduce 52
+	SEM  reduce 50
+	OR  reduce 50
+	AND  reduce 50
+	RB  reduce 50
 
 
 state 61
@@ -866,22 +863,22 @@ state 61
 
 
 state 62
-	logical_and_expr : logical_and_expr . AND Bool  (42)
-	logical_or_expr : logical_and_expr .  (43)
+	logical_and_expr : logical_and_expr . AND Bool  (40)
+	logical_or_expr : logical_and_expr .  (41)
 
 	AND  shift 93
-	SEM  reduce 43
-	OR  reduce 43
-	RB  reduce 43
+	SEM  reduce 41
+	OR  reduce 41
+	RB  reduce 41
 
 
 state 63
-	logical_or_expr : logical_or_expr . OR logical_and_expr  (44)
-	Bool_expr : logical_or_expr .  (45)
+	logical_or_expr : logical_or_expr . OR logical_and_expr  (42)
+	Bool_expr : logical_or_expr .  (43)
 
 	OR  shift 94
-	SEM  reduce 45
-	RB  reduce 45
+	SEM  reduce 43
+	RB  reduce 43
 
 
 state 64
@@ -900,7 +897,7 @@ state 65
 
 
 state 66
-	For_First : TYPE . Declarator EQ Expr  (34)
+	For_First : TYPE . Declarator EQ Expr  (32)
 
 	ID  shift 42
 	STAR  shift 43
@@ -910,15 +907,15 @@ state 66
 
 
 state 67
-	For_First : Expr .  (33)
-	For_First : Expr . EQ Expr  (35)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	For_First : Expr .  (31)
+	For_First : Expr . EQ Expr  (33)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	EQ  shift 98
 	DEC  shift 52
 	ADD  shift 53
-	SEM  reduce 33
+	SEM  reduce 31
 
 
 state 68
@@ -935,8 +932,8 @@ state 69
 
 
 state 70
-	Declarator : ID MLB . MRB  (25)
-	Declarator : ID MLB . NUMBER MRB  (26)
+	Declarator : ID MLB . MRB  (23)
+	Declarator : ID MLB . NUMBER MRB  (24)
 
 	NUMBER  shift 100
 	MRB  shift 101
@@ -944,19 +941,19 @@ state 70
 
 
 state 71
-	Declarator : STAR ID .  (23)
+	Declarator : STAR ID .  (21)
 
-	.  reduce 23
+	.  reduce 21
 
 
 state 72
-	Declaration_stmt : TYPE Initial_declaration_list SEM .  (32)
+	Declaration_stmt : TYPE Initial_declaration_list SEM .  (30)
 
-	.  reduce 32
+	.  reduce 30
 
 
 state 73
-	Initial_declaration_list : Initial_declaration_list COMMA . Init_declarator  (28)
+	Initial_declaration_list : Initial_declaration_list COMMA . Init_declarator  (26)
 
 	ID  shift 42
 	STAR  shift 43
@@ -968,7 +965,7 @@ state 73
 
 
 state 74
-	Initializer : Declarator EQ . Expr  (31)
+	Initializer : Declarator EQ . Expr  (29)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -988,26 +985,26 @@ state 74
 	POW  goto 35
 
 
-75: shift/reduce conflict (shift 104, reduce 70) on RB
+75: shift/reduce conflict (shift 104, reduce 68) on RB
 state 75
 	Stmt : ID LB ID . RB SEM  (19)
-	Factor : ID .  (70)
-	Factor : ID . MLB Expr MRB  (72)
+	Factor : ID .  (68)
+	Factor : ID . MLB Expr MRB  (70)
 
 	RB  shift 104
 	MLB  shift 49
-	DEC  reduce 70
-	ADD  reduce 70
-	DIV  reduce 70
-	STAR  reduce 70
-	MOD  reduce 70
-	EXP  reduce 70
+	DEC  reduce 68
+	ADD  reduce 68
+	DIV  reduce 68
+	STAR  reduce 68
+	MOD  reduce 68
+	EXP  reduce 68
 
 
 state 76
 	Stmt : ID LB Expr . RB SEM  (18)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1016,9 +1013,9 @@ state 76
 
 
 state 77
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
-	Factor : ID MLB Expr . MRB  (72)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
+	Factor : ID MLB Expr . MRB  (70)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1027,15 +1024,15 @@ state 77
 
 
 state 78
-	Factor : LB Expr RB .  (69)
+	Factor : LB Expr RB .  (67)
 
-	.  reduce 69
+	.  reduce 67
 
 
 state 79
 	Assignment_Stmt : Expr EQ Expr . SEM  (20)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	SEM  shift 107
 	DEC  shift 52
@@ -1044,83 +1041,83 @@ state 79
 
 
 state 80
-	Expr : Expr DEC Term .  (61)
-	Term : Term . STAR unary_expr  (63)
-	Term : Term . DIV unary_expr  (64)
-	Term : Term . MOD unary_expr  (65)
+	Expr : Expr DEC Term .  (59)
+	Term : Term . STAR unary_expr  (61)
+	Term : Term . DIV unary_expr  (62)
+	Term : Term . MOD unary_expr  (63)
 
 	DIV  shift 54
 	STAR  shift 55
 	MOD  shift 56
-	SEM  reduce 61
-	COMMA  reduce 61
-	EQ  reduce 61
-	OR  reduce 61
-	AND  reduce 61
-	LT  reduce 61
-	LE  reduce 61
-	GT  reduce 61
-	GE  reduce 61
-	EQUEL  reduce 61
-	NE  reduce 61
-	DEC  reduce 61
-	ADD  reduce 61
-	RB  reduce 61
-	MRB  reduce 61
+	SEM  reduce 59
+	COMMA  reduce 59
+	EQ  reduce 59
+	OR  reduce 59
+	AND  reduce 59
+	LT  reduce 59
+	LE  reduce 59
+	GT  reduce 59
+	GE  reduce 59
+	EQUEL  reduce 59
+	NE  reduce 59
+	DEC  reduce 59
+	ADD  reduce 59
+	RB  reduce 59
+	MRB  reduce 59
 
 
 state 81
-	Expr : Expr ADD Term .  (60)
-	Term : Term . STAR unary_expr  (63)
-	Term : Term . DIV unary_expr  (64)
-	Term : Term . MOD unary_expr  (65)
+	Expr : Expr ADD Term .  (58)
+	Term : Term . STAR unary_expr  (61)
+	Term : Term . DIV unary_expr  (62)
+	Term : Term . MOD unary_expr  (63)
 
 	DIV  shift 54
 	STAR  shift 55
 	MOD  shift 56
-	SEM  reduce 60
-	COMMA  reduce 60
-	EQ  reduce 60
-	OR  reduce 60
-	AND  reduce 60
-	LT  reduce 60
-	LE  reduce 60
-	GT  reduce 60
-	GE  reduce 60
-	EQUEL  reduce 60
-	NE  reduce 60
-	DEC  reduce 60
-	ADD  reduce 60
-	RB  reduce 60
-	MRB  reduce 60
+	SEM  reduce 58
+	COMMA  reduce 58
+	EQ  reduce 58
+	OR  reduce 58
+	AND  reduce 58
+	LT  reduce 58
+	LE  reduce 58
+	GT  reduce 58
+	GE  reduce 58
+	EQUEL  reduce 58
+	NE  reduce 58
+	DEC  reduce 58
+	ADD  reduce 58
+	RB  reduce 58
+	MRB  reduce 58
 
 
 state 82
-	Term : Term DIV unary_expr .  (64)
+	Term : Term DIV unary_expr .  (62)
 
-	.  reduce 64
+	.  reduce 62
 
 
 state 83
-	Term : Term STAR unary_expr .  (63)
+	Term : Term STAR unary_expr .  (61)
+
+	.  reduce 61
+
+
+state 84
+	Term : Term MOD unary_expr .  (63)
 
 	.  reduce 63
 
 
-state 84
-	Term : Term MOD unary_expr .  (65)
-
-	.  reduce 65
-
-
 state 85
-	POW : POW EXP unary_expr .  (68)
+	POW : POW EXP unary_expr .  (66)
 
-	.  reduce 68
+	.  reduce 66
 
 
 state 86
-	Bool : Expr LT . Expr  (46)
+	Bool : Expr LT . Expr  (44)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1141,7 +1138,7 @@ state 86
 
 
 state 87
-	Bool : Expr LE . Expr  (47)
+	Bool : Expr LE . Expr  (45)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1162,7 +1159,7 @@ state 87
 
 
 state 88
-	Bool : Expr GT . Expr  (48)
+	Bool : Expr GT . Expr  (46)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1183,7 +1180,7 @@ state 88
 
 
 state 89
-	Bool : Expr GE . Expr  (49)
+	Bool : Expr GE . Expr  (47)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1204,7 +1201,7 @@ state 89
 
 
 state 90
-	Bool : Expr EQUEL . Expr  (50)
+	Bool : Expr EQUEL . Expr  (48)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1225,7 +1222,7 @@ state 90
 
 
 state 91
-	Bool : Expr NE . Expr  (51)
+	Bool : Expr NE . Expr  (49)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1279,7 +1276,7 @@ state 92
 
 
 state 93
-	logical_and_expr : logical_and_expr AND . Bool  (42)
+	logical_and_expr : logical_and_expr AND . Bool  (40)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1301,7 +1298,7 @@ state 93
 
 
 state 94
-	logical_or_expr : logical_or_expr OR . logical_and_expr  (44)
+	logical_or_expr : logical_or_expr OR . logical_and_expr  (42)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1383,14 +1380,14 @@ state 96
 
 
 state 97
-	For_First : TYPE Declarator . EQ Expr  (34)
+	For_First : TYPE Declarator . EQ Expr  (32)
 
 	EQ  shift 121
 	.  error
 
 
 state 98
-	For_First : Expr EQ . Expr  (35)
+	For_First : Expr EQ . Expr  (33)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1412,7 +1409,7 @@ state 98
 
 state 99
 	Stmt : FOR LB For_First SEM . For_Second SEM For_Third RB Block_Stmt  (15)
-	For_Second : .  (38)
+	For_Second : .  (36)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1422,7 +1419,7 @@ state 99
 	STAR  shift 23
 	NOT  shift 24
 	LB  shift 25
-	SEM  reduce 38
+	SEM  reduce 36
 
 	Bool  goto 59
 	Expr  goto 60
@@ -1438,33 +1435,33 @@ state 99
 
 
 state 100
-	Declarator : ID MLB NUMBER . MRB  (26)
+	Declarator : ID MLB NUMBER . MRB  (24)
 
 	MRB  shift 125
 	.  error
 
 
 state 101
-	Declarator : ID MLB MRB .  (25)
+	Declarator : ID MLB MRB .  (23)
 
-	.  reduce 25
+	.  reduce 23
 
 
 state 102
-	Initial_declaration_list : Initial_declaration_list COMMA Init_declarator .  (28)
+	Initial_declaration_list : Initial_declaration_list COMMA Init_declarator .  (26)
 
-	.  reduce 28
+	.  reduce 26
 
 
 state 103
-	Initializer : Declarator EQ Expr .  (31)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Initializer : Declarator EQ Expr .  (29)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
-	SEM  reduce 31
-	COMMA  reduce 31
+	SEM  reduce 29
+	COMMA  reduce 29
 
 
 state 104
@@ -1482,9 +1479,9 @@ state 105
 
 
 state 106
-	Factor : ID MLB Expr MRB .  (72)
+	Factor : ID MLB Expr MRB .  (70)
 
-	.  reduce 72
+	.  reduce 70
 
 
 state 107
@@ -1494,9 +1491,35 @@ state 107
 
 
 state 108
-	Bool : Expr LT Expr .  (46)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	Bool : Expr LT Expr .  (44)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
+
+	DEC  shift 52
+	ADD  shift 53
+	SEM  reduce 44
+	OR  reduce 44
+	AND  reduce 44
+	RB  reduce 44
+
+
+state 109
+	Bool : Expr LE Expr .  (45)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
+
+	DEC  shift 52
+	ADD  shift 53
+	SEM  reduce 45
+	OR  reduce 45
+	AND  reduce 45
+	RB  reduce 45
+
+
+state 110
+	Bool : Expr GT Expr .  (46)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1506,10 +1529,10 @@ state 108
 	RB  reduce 46
 
 
-state 109
-	Bool : Expr LE Expr .  (47)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+state 111
+	Bool : Expr GE Expr .  (47)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1519,10 +1542,10 @@ state 109
 	RB  reduce 47
 
 
-state 110
-	Bool : Expr GT Expr .  (48)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+state 112
+	Bool : Expr EQUEL Expr .  (48)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1532,10 +1555,10 @@ state 110
 	RB  reduce 48
 
 
-state 111
-	Bool : Expr GE Expr .  (49)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+state 113
+	Bool : Expr NE Expr .  (49)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
@@ -1543,32 +1566,6 @@ state 111
 	OR  reduce 49
 	AND  reduce 49
 	RB  reduce 49
-
-
-state 112
-	Bool : Expr EQUEL Expr .  (50)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
-
-	DEC  shift 52
-	ADD  shift 53
-	SEM  reduce 50
-	OR  reduce 50
-	AND  reduce 50
-	RB  reduce 50
-
-
-state 113
-	Bool : Expr NE Expr .  (51)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
-
-	DEC  shift 52
-	ADD  shift 53
-	SEM  reduce 51
-	OR  reduce 51
-	AND  reduce 51
-	RB  reduce 51
 
 
 state 114
@@ -1590,19 +1587,19 @@ state 116
 
 
 state 117
-	logical_and_expr : logical_and_expr AND Bool .  (42)
+	logical_and_expr : logical_and_expr AND Bool .  (40)
 
-	.  reduce 42
+	.  reduce 40
 
 
 state 118
-	logical_and_expr : logical_and_expr . AND Bool  (42)
-	logical_or_expr : logical_or_expr OR logical_and_expr .  (44)
+	logical_and_expr : logical_and_expr . AND Bool  (40)
+	logical_or_expr : logical_or_expr OR logical_and_expr .  (42)
 
 	AND  shift 93
-	SEM  reduce 44
-	OR  reduce 44
-	RB  reduce 44
+	SEM  reduce 42
+	OR  reduce 42
+	RB  reduce 42
 
 
 state 119
@@ -1635,7 +1632,7 @@ state 120
 
 
 state 121
-	For_First : TYPE Declarator EQ . Expr  (34)
+	For_First : TYPE Declarator EQ . Expr  (32)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1656,13 +1653,13 @@ state 121
 
 
 state 122
-	For_First : Expr EQ Expr .  (35)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	For_First : Expr EQ Expr .  (33)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
-	SEM  reduce 35
+	SEM  reduce 33
 
 
 state 123
@@ -1673,15 +1670,15 @@ state 123
 
 
 state 124
-	For_Second : Bool_expr .  (37)
+	For_Second : Bool_expr .  (35)
 
-	.  reduce 37
+	.  reduce 35
 
 
 state 125
-	Declarator : ID MLB NUMBER MRB .  (26)
+	Declarator : ID MLB NUMBER MRB .  (24)
 
-	.  reduce 26
+	.  reduce 24
 
 
 state 126
@@ -1737,18 +1734,18 @@ state 129
 
 
 state 130
-	For_First : TYPE Declarator EQ Expr .  (34)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	For_First : TYPE Declarator EQ Expr .  (32)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
-	SEM  reduce 34
+	SEM  reduce 32
 
 
 state 131
 	Stmt : FOR LB For_First SEM For_Second SEM . For_Third RB Block_Stmt  (15)
-	For_Third : .  (40)
+	For_Third : .  (38)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1758,7 +1755,7 @@ state 131
 	STAR  shift 23
 	NOT  shift 24
 	LB  shift 25
-	RB  reduce 40
+	RB  reduce 38
 
 	Expr  goto 134
 	Term  goto 30
@@ -1782,9 +1779,9 @@ state 133
 
 
 state 134
-	For_Third : Expr . EQ Expr  (39)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	For_Third : Expr . EQ Expr  (37)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	EQ  shift 136
 	DEC  shift 52
@@ -1800,7 +1797,7 @@ state 135
 
 
 state 136
-	For_Third : Expr EQ . Expr  (39)
+	For_Third : Expr EQ . Expr  (37)
 
 	SINGNALAND  shift 17
 	ID  shift 40
@@ -1854,13 +1851,13 @@ state 137
 
 
 state 138
-	For_Third : Expr EQ Expr .  (39)
-	Expr : Expr . ADD Term  (60)
-	Expr : Expr . DEC Term  (61)
+	For_Third : Expr EQ Expr .  (37)
+	Expr : Expr . ADD Term  (58)
+	Expr : Expr . DEC Term  (59)
 
 	DEC  shift 52
 	ADD  shift 53
-	RB  reduce 39
+	RB  reduce 37
 
 
 state 139
@@ -1869,13 +1866,8 @@ state 139
 	.  reduce 15
 
 
-Rules never reduced:
-	Assignment_list : Initializer  (21)
-	Assignment_list : Assignment_list COMMA Initializer  (22)
-
-
 State 75 contains 1 shift/reduce conflict.
 
 
-46 terminals, 28 nonterminals
-73 grammar rules, 140 states
+46 terminals, 27 nonterminals
+71 grammar rules, 140 states
