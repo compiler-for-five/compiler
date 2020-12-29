@@ -6,6 +6,7 @@
 #include "AST.h"
 #include "symbol.h"
 #include <string.h>
+#include "InterMediate.h"
 int yyerror(char *s);
 int yylex();
 extern FILE * yyin;
@@ -49,6 +50,10 @@ Result:Program
         //SymbolTable* table = NULL;
         SymbolTable* table = symbolTable->buildSymbolTable(root);
         table->printSymbolTable();
+        InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
+        mediate->Generate(mediate->getRoot(), mediate->getTable());
+        mediate->printQuads();
+
     }
     ;
 Program:RETYPE MAIN LB RB Block 
