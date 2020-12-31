@@ -7,6 +7,7 @@
 #include "symbol.h"
 #include <string.h>
 #include "InterMediate.h"
+#include "AsmGenerator.h"
 int yyerror(char *s);
 int yylex();
 extern FILE * yyin;
@@ -53,6 +54,10 @@ Result:Program
         InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
         mediate->Generate(mediate->getRoot(), mediate->getTable());
         mediate->printQuads();
+        AsmGenerator* asmgenerator = new AsmGenerator(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
+        asmgenerator->generate();
+        std::cout << asmgenerator->getAsmCode();
+
 
     }
     ;

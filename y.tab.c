@@ -27,12 +27,13 @@
 #include "symbol.h"
 #include <string.h>
 #include "InterMediate.h"
+#include "AsmGenerator.h"
 int yyerror(char *s);
 int yylex();
 extern FILE * yyin;
 extern int yyparse(void);
 AST* root;
-#line 17 "yacc.y"
+#line 18 "yacc.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -44,7 +45,7 @@ struct AST* a;
 char* str;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 48 "y.tab.c"
+#line 49 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -410,9 +411,9 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 485 "yacc.y"
+#line 490 "yacc.y"
 
-#line 416 "y.tab.c"
+#line 417 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -615,7 +616,7 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 44 "yacc.y"
+#line 45 "yacc.y"
 	{
         root = new RootASTNode();
         root->add_child_node(yystack.l_mark[0].a);
@@ -628,11 +629,15 @@ case 1:
         InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
         mediate->Generate(mediate->getRoot(), mediate->getTable());
         mediate->printQuads();
+        AsmGenerator* asmgenerator = new AsmGenerator(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
+        asmgenerator->generate();
+        std::cout << asmgenerator->getAsmCode();
+
 
     }
 break;
 case 2:
-#line 60 "yacc.y"
+#line 65 "yacc.y"
 	{
         DefFunASTNode* temp = new DefFunASTNode(yystack.l_mark[-3].str, NULL, NULL);
         temp->setFunBody(yystack.l_mark[0].a);
@@ -641,19 +646,19 @@ case 2:
     }
 break;
 case 3:
-#line 68 "yacc.y"
+#line 73 "yacc.y"
 	{
         yyval.str = strdup(yystack.l_mark[0].str);
     }
 break;
 case 4:
-#line 72 "yacc.y"
+#line 77 "yacc.y"
 	{
         yyval.str = strdup(yystack.l_mark[0].str);
     }
 break;
 case 5:
-#line 77 "yacc.y"
+#line 82 "yacc.y"
 	{
         AST* compStmt = new StmtASTNode(StmtType::compStmt);
         compStmt->add_child_node(yystack.l_mark[-1].a);
@@ -661,19 +666,19 @@ case 5:
     }
 break;
 case 6:
-#line 84 "yacc.y"
+#line 89 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 7:
-#line 88 "yacc.y"
+#line 93 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 8:
-#line 93 "yacc.y"
+#line 98 "yacc.y"
 	{
         if (yystack.l_mark[-1].a == NULL) yyval.a = yystack.l_mark[0].a;
         else {
@@ -682,25 +687,25 @@ case 8:
     }
 break;
 case 9:
-#line 100 "yacc.y"
+#line 105 "yacc.y"
 	{
         yyval.a = NULL;
     }
 break;
 case 10:
-#line 105 "yacc.y"
+#line 110 "yacc.y"
 	{
         yyval.a = new SelectASTNode((char*)"", SelectType::_if, yystack.l_mark[0].a, yystack.l_mark[-2].a);
     }
 break;
 case 11:
-#line 109 "yacc.y"
+#line 114 "yacc.y"
 	{
         yyval.a = new SelectASTNode((char*)"", SelectType::_if, yystack.l_mark[-2].a, yystack.l_mark[-4].a, yystack.l_mark[0].a);
     }
 break;
 case 12:
-#line 113 "yacc.y"
+#line 118 "yacc.y"
 	{
         AST* temp = new StmtASTNode(StmtType::returnStmt);
         temp->add_child_node(yystack.l_mark[-1].a);
@@ -708,49 +713,49 @@ case 12:
     }
 break;
 case 13:
-#line 119 "yacc.y"
+#line 124 "yacc.y"
 	{
         yyval.a = new LoopASTNode((char*)"", LoopType::_while, yystack.l_mark[0].a, yystack.l_mark[-2].a, true);
     }
 break;
 case 14:
-#line 123 "yacc.y"
+#line 128 "yacc.y"
 	{
         yyval.a = new LoopASTNode((char*)"", LoopType::_while, yystack.l_mark[-5].a, yystack.l_mark[-2].a, true);
     }
 break;
 case 15:
-#line 127 "yacc.y"
+#line 132 "yacc.y"
 	{
         yyval.a = new LoopASTNode((char*)"", LoopType::_for, yystack.l_mark[0].a, yystack.l_mark[-6].a, yystack.l_mark[-4].a, yystack.l_mark[-2].a);
     }
 break;
 case 16:
-#line 131 "yacc.y"
+#line 136 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 17:
-#line 135 "yacc.y"
+#line 140 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 18:
-#line 139 "yacc.y"
+#line 144 "yacc.y"
 	{
         yyval.a = new CallFunASTNode(yystack.l_mark[-4].str, yystack.l_mark[-2].a);
     }
 break;
 case 19:
-#line 143 "yacc.y"
+#line 148 "yacc.y"
 	{
         yyval.a = new CallFunASTNode(yystack.l_mark[-4].str, yystack.l_mark[-2].str);
     }
 break;
 case 20:
-#line 148 "yacc.y"
+#line 153 "yacc.y"
 	{
         AST* temp = NULL;
         if (yystack.l_mark[-3].a->nodeType == ASTNodeType::op) {
@@ -771,7 +776,7 @@ case 20:
     }
 break;
 case 21:
-#line 168 "yacc.y"
+#line 173 "yacc.y"
 	{
         DefVarASTNode* var = new DefVarASTNode((char*)yystack.l_mark[0].str);
         var->set_type((char*)("integer pointer"));
@@ -779,13 +784,13 @@ case 21:
     }
 break;
 case 22:
-#line 174 "yacc.y"
+#line 179 "yacc.y"
 	{
         yyval.a = new DefVarASTNode(yystack.l_mark[0].str);
     }
 break;
 case 23:
-#line 178 "yacc.y"
+#line 183 "yacc.y"
 	{
         DefVarASTNode* var = new DefVarASTNode((char*)yystack.l_mark[-2].str);
         var->set_type((char*)("array"));
@@ -794,7 +799,7 @@ case 23:
     }
 break;
 case 24:
-#line 185 "yacc.y"
+#line 190 "yacc.y"
 	{
         DefVarASTNode* var = new DefVarASTNode((char*)yystack.l_mark[-3].str);
         var->set_type((char*)("array"));
@@ -803,39 +808,39 @@ case 24:
     }
 break;
 case 25:
-#line 193 "yacc.y"
+#line 198 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 26:
-#line 197 "yacc.y"
+#line 202 "yacc.y"
 	{
         yystack.l_mark[-2].a->get_last_peer_node()->add_peer_node(yystack.l_mark[0].a);
         yyval.a = yystack.l_mark[-2].a;
     }
 break;
 case 27:
-#line 203 "yacc.y"
+#line 208 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 28:
-#line 207 "yacc.y"
+#line 212 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 29:
-#line 212 "yacc.y"
+#line 217 "yacc.y"
 	{
         yystack.l_mark[-2].a->add_child_node(yystack.l_mark[0].a);
         yyval.a = yystack.l_mark[-2].a;
     }
 break;
 case 30:
-#line 218 "yacc.y"
+#line 223 "yacc.y"
 	{
         DefVarASTNode* temp = (DefVarASTNode*)yystack.l_mark[-1].a;
         if(temp->type == symbolType::unset)
@@ -844,13 +849,13 @@ case 30:
     }
 break;
 case 31:
-#line 226 "yacc.y"
+#line 231 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 32:
-#line 230 "yacc.y"
+#line 235 "yacc.y"
 	{
         DefVarASTNode* temp = (DefVarASTNode*)yystack.l_mark[-2].a;
         if(temp->type == symbolType::unset)
@@ -860,7 +865,7 @@ case 32:
     }
 break;
 case 33:
-#line 238 "yacc.y"
+#line 243 "yacc.y"
 	{
         AST* temp = NULL;
         if (yystack.l_mark[-2].a->nodeType == ASTNodeType::op) {
@@ -881,25 +886,25 @@ case 33:
     }
 break;
 case 34:
-#line 257 "yacc.y"
+#line 262 "yacc.y"
 	{
         yyval.a = NULL;
     }
 break;
 case 35:
-#line 262 "yacc.y"
+#line 267 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 36:
-#line 266 "yacc.y"
+#line 271 "yacc.y"
 	{
         yyval.a = NULL;
     }
 break;
 case 37:
-#line 271 "yacc.y"
+#line 276 "yacc.y"
 	{
         AST* temp = NULL;
         if (yystack.l_mark[-2].a->nodeType == ASTNodeType::op) {
@@ -920,19 +925,19 @@ case 37:
     }
 break;
 case 38:
-#line 290 "yacc.y"
+#line 295 "yacc.y"
 	{
         yyval.a = NULL;
     }
 break;
 case 39:
-#line 295 "yacc.y"
+#line 300 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 40:
-#line 299 "yacc.y"
+#line 304 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"&&", opType::And);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -941,13 +946,13 @@ case 40:
     }
 break;
 case 41:
-#line 307 "yacc.y"
+#line 312 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 42:
-#line 311 "yacc.y"
+#line 316 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"||", opType::Or);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -956,13 +961,13 @@ case 42:
     }
 break;
 case 43:
-#line 319 "yacc.y"
+#line 324 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 44:
-#line 324 "yacc.y"
+#line 329 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -971,7 +976,7 @@ case 44:
     }
 break;
 case 45:
-#line 331 "yacc.y"
+#line 336 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -980,7 +985,7 @@ case 45:
     }
 break;
 case 46:
-#line 338 "yacc.y"
+#line 343 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -989,7 +994,7 @@ case 46:
     }
 break;
 case 47:
-#line 345 "yacc.y"
+#line 350 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -998,7 +1003,7 @@ case 47:
     }
 break;
 case 48:
-#line 352 "yacc.y"
+#line 357 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1007,7 +1012,7 @@ case 48:
     }
 break;
 case 49:
-#line 359 "yacc.y"
+#line 364 "yacc.y"
 	{
         AST* temp = new OperatorASTNode(yystack.l_mark[-1].str, opType::Relop);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1016,19 +1021,19 @@ case 49:
     }
 break;
 case 50:
-#line 366 "yacc.y"
-	{
-        yyval.a = yystack.l_mark[0].a;
-    }
-break;
-case 51:
 #line 371 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
+case 51:
+#line 376 "yacc.y"
+	{
+        yyval.a = yystack.l_mark[0].a;
+    }
+break;
 case 52:
-#line 375 "yacc.y"
+#line 380 "yacc.y"
 	{
         AST* temp = yystack.l_mark[-1].a;
         temp->add_child_node(yystack.l_mark[0].a);
@@ -1036,42 +1041,42 @@ case 52:
     }
 break;
 case 53:
-#line 382 "yacc.y"
+#line 387 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"+", opType::Orgative);
         yyval.a = temp;
     }
 break;
 case 54:
-#line 387 "yacc.y"
+#line 392 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"-", opType::Negative);
         yyval.a = temp;
     }
 break;
 case 55:
-#line 392 "yacc.y"
+#line 397 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"!", opType::Not);
         yyval.a = temp;
     }
 break;
 case 56:
-#line 397 "yacc.y"
+#line 402 "yacc.y"
 	{
         AST* op = new OperatorASTNode((char*)"&", opType::SingalAnd);
         yyval.a = op;
     }
 break;
 case 57:
-#line 402 "yacc.y"
+#line 407 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"*", opType::GetValue);
         yyval.a = temp;
     }
 break;
 case 58:
-#line 408 "yacc.y"
+#line 413 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"+", opType::Plus);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1080,7 +1085,7 @@ case 58:
     }
 break;
 case 59:
-#line 415 "yacc.y"
+#line 420 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"-", opType::Minus);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1089,13 +1094,13 @@ case 59:
     }
 break;
 case 60:
-#line 422 "yacc.y"
+#line 427 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
 case 61:
-#line 427 "yacc.y"
+#line 432 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"*", opType::Times);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1104,7 +1109,7 @@ case 61:
     }
 break;
 case 62:
-#line 434 "yacc.y"
+#line 439 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"/", opType::Div);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1113,7 +1118,7 @@ case 62:
     }
 break;
 case 63:
-#line 441 "yacc.y"
+#line 446 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"%", opType::Mod);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1122,19 +1127,19 @@ case 63:
     }
 break;
 case 64:
-#line 448 "yacc.y"
-	{
-        yyval.a = yystack.l_mark[0].a;
-    }
-break;
-case 65:
 #line 453 "yacc.y"
 	{
         yyval.a = yystack.l_mark[0].a;
     }
 break;
+case 65:
+#line 458 "yacc.y"
+	{
+        yyval.a = yystack.l_mark[0].a;
+    }
+break;
 case 66:
-#line 457 "yacc.y"
+#line 462 "yacc.y"
 	{
         AST* temp = new OperatorASTNode((char*)"^", opType::Power);
         temp->add_child_node(yystack.l_mark[-2].a);
@@ -1143,25 +1148,25 @@ case 66:
     }
 break;
 case 67:
-#line 465 "yacc.y"
+#line 470 "yacc.y"
 	{
         yyval.a = yystack.l_mark[-1].a;
     }
 break;
 case 68:
-#line 469 "yacc.y"
+#line 474 "yacc.y"
 	{
         yyval.a = new VarASTNode(yystack.l_mark[0].str);
     }
 break;
 case 69:
-#line 473 "yacc.y"
+#line 478 "yacc.y"
 	{
         yyval.a = new LiteralASTNode(yystack.l_mark[0].str);
     }
 break;
 case 70:
-#line 477 "yacc.y"
+#line 482 "yacc.y"
 	{
         AST* op = new OperatorASTNode((char*)"[]", opType::GetArrayValue);
         AST* var = new VarASTNode((char*)yystack.l_mark[-3].str);
@@ -1170,7 +1175,7 @@ case 70:
         yyval.a = op;
     }
 break;
-#line 1174 "y.tab.c"
+#line 1179 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
