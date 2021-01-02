@@ -70,8 +70,7 @@ symbol *SymbolTable::findSymbol(std::string name)
             return target;
         }
     }
-    std::cout << "\033[31mError: \033[0m"
-              << "value " << name << " is not defined" << std::endl;
+    std::cout <<"Error："<< "value " << name << " is not defined" << std::endl;
     exit(1);
     return NULL;
 }
@@ -113,8 +112,11 @@ int SymbolTable::addSymbol(symbol *s)
 int SymbolTable::addSymbol(std::string idName, symbolType idType)
 {
     symbol *s = new symbol(idName, idType);
-    if (this->findInThisTable(s->getIdName()) != NULL)
+    if (this->findInThisTable(s->getIdName()) != NULL){
+        cout<<"Error: "<<"value "<<s->getIdName()<<' '<<"is redefined."<<endl; 
+        exit(1);
         return FAIL;
+    }
 
     this->baseTable->symbolArray->push_back(s); // why add to baseTable, not this table ?
     s->setIndex(this->baseTable->symbolItemCount++);
