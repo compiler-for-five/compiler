@@ -23,7 +23,7 @@ char* str;
 %token <str> SEM COMMA delim whitespace
 WHILE DO IF THEN ELSE FOR NEWLINE ERRORCHAR RETURN IFX SINGNALAND
 %type <str> RETYPE 
-%token <str> TYPE VOID ID NUMBER MAIN
+%token <str> TYPE VOID ID NUMBER MAIN PRINT
 %type <a> Program Block Stmts Stmt Initializer Declaration_stmt Bool Expr Term Factor Block_Stmt
 For_First For_Second For_Third Assignment_Stmt Init_declarator Initial_declaration_list Declarator
 unary_expr unary_operator POW Bool_expr logical_and_expr logical_or_expr
@@ -43,8 +43,7 @@ unary_expr unary_operator POW Bool_expr logical_and_expr logical_or_expr
 %%
 Result:Program
     {
-        root = new RootASTNode();
-        root->add_child_node($1);
+        root = $1;
         root->print_tree(root, 0);
         SymbolTable* symbolTable = new SymbolTable(NULL, true);
         //table->printSymbolTable();
@@ -63,9 +62,9 @@ Result:Program
     ;
 Program:RETYPE MAIN LB RB Block 
     {
-        DefFunASTNode* temp = new DefFunASTNode($2, NULL, NULL);
-        temp->setFunBody($5);
-        temp->setRevType($1);
+        RootASTNode* temp = new RootASTNode();
+        temp->add_child_node($5);
+        temp->return_type = $1;
         $$ = temp;
     }
     ;
@@ -114,6 +113,10 @@ Stmt:IF LB Bool_expr RB Block_Stmt %prec IFX
     {
         $$ = new SelectASTNode((char*)"", SelectType::_if, $5, $3, $7);
     }
+    |PRINT LB ID RB SEM
+    {
+        $$ = new PrintASTNode((char*)$3);
+    }
     |RETURN Expr SEM 
     {
         AST* temp = new StmtASTNode(StmtType::returnStmt);
@@ -139,14 +142,6 @@ Stmt:IF LB Bool_expr RB Block_Stmt %prec IFX
     |Assignment_Stmt 
     {
         $$ = $1;
-    }
-    |ID LB Expr RB SEM
-    {
-        $$ = new CallFunASTNode($1, $3);
-    }
-    |ID LB ID RB SEM 
-    {
-        $$ = new CallFunASTNode($1, $3);
     }
     ;
 Assignment_Stmt:Expr EQ Expr SEM 

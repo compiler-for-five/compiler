@@ -1,12 +1,9 @@
-int main() {
-    int a[10];
-    int i=0;
-    for (i; i < 10; i=i+1) {
-        a[i] = i;
-    }
-    i = 0;
-    for (i; i < 10; i=i+1) {
-        print_int(a[i]);
-    }
-    return 0;
+int main(){
+    int a=0;
+    print_int(a);
+    //a=2;
+    a=3;
+    /*a=5;
+    a=6;*/
+    a=7;
 }

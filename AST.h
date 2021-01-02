@@ -53,13 +53,6 @@ public:
     virtual void print_info(int depth) = 0;
 };
 
-class Root:public AST
-{
-public:
-    Root();
-    void print_info(int depth);
-};
-
 class DefVarASTNode : public AST
 {
 public:
@@ -102,6 +95,7 @@ public:
 class RootASTNode : public AST
 {
 public:
+    char* return_type;
     RootASTNode();
     void print_info(int depth);
 };
@@ -149,8 +143,15 @@ public:
   AST *body;
    //if & else if contain 23 child node, qulification statement and 'else''else if' node(optional)
   SelectType selectType;
-  SelectASTNode(char *content, SelectType type, AST *body, AST *condition, AST *elseStmt = NULL);
+  SelectASTNode(char *value, SelectType type, AST *body, AST *condition, AST *elseStmt = NULL);
   void print_info(int depth);
+};
+
+class PrintASTNode : public AST
+{
+public:
+    PrintASTNode(char *value);
+    void print_info(int depth);
 };
 
 enum class StmtType
@@ -169,31 +170,7 @@ public:
     void print_info(int depth);
 };
 
-class DefFunASTNode : public AST
-{
-public:
-    // 记录参数列表
-    AST* argList;
-    symbolType revType;
-    // argList是参数列表，funcBody是函数体
-    DefFunASTNode(char* value, AST* argList, AST* funcBody);
-    inline void setFunBody(AST* body) {this->add_child_node(body);}
-    void setRevType(char*);
-    // 通过 AST 继承
-    void print_info(int depth);
-};
 
-class CallFunASTNode : public AST
-{
-public:
-    // 记录参数列表
-    AST *varList;
-    CallFunASTNode(char *value, AST *varList);
-    CallFunASTNode(char *value, char *var);
-    // 通过 AST 继承
-    void print_info(int depth);
-    inline AST *getVarList() { return this->varList; }
-};
 
 class VarASTNode : public AST
 {

@@ -157,17 +157,6 @@ SymbolTable * SymbolTable::buildSymbolTable(AST *node)
     AST *p = node->child;
     switch (node->nodeType)
     {
-    case ASTNodeType::defFunc: //是主函数则新建一个符号表，根作用域
-    {
-        DefFunASTNode *tempNode = (DefFunASTNode *)node;
-        if(node->value == "main") {
-            while (p != NULL)
-            {
-                this->buildSymbolTable(p);
-                p = p->peer;
-            }
-        }
-    }
     case ASTNodeType::stmt:
     {
         StmtASTNode *ret = (StmtASTNode *)node;

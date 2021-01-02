@@ -256,6 +256,15 @@ void SelectASTNode::print_info(int depth)
     }
 }
 
+PrintASTNode::PrintASTNode(char *value) {
+    this->value = value;
+}
+
+void PrintASTNode::print_info(int depth)
+{
+    cout<< "print  " << this->value << endl;
+}
+
 StmtASTNode::StmtASTNode(StmtType type) : AST(ASTNodeType::stmt) {
     this->type = type;
 }
@@ -282,62 +291,7 @@ RootASTNode::RootASTNode() : AST(ASTNodeType::root)
 
 void RootASTNode::print_info(int depth)
 {
-  cout << this->value << endl;
-}
-
-DefFunASTNode::DefFunASTNode(char* value, AST* argList, AST* funcBody)
-    :AST(value, ASTNodeType::defFunc)
-{
-    this->argList = argList;
-    this->add_child_node(funcBody);
-}
-
-void DefFunASTNode::print_info(int depth)
-{
-    cout << "Function define. Name:" << this->value << endl;
-    cout << " ";
-    for (int i = 0; i < depth + 1; i++) cout << " ";
-    AST* var = (AST*)this->argList;
-    while (var != NULL) {
-        AST::print_tree(var, depth + 1);
-        var = var->peer;
-    }
-}
-
-void DefFunASTNode::setRevType(char* type)
-{
-    if (strcmp(type, "int") == 0) {
-        this->revType = symbolType::integer;
-    } else if (strcmp(type, "void") == 0) {
-        this->revType = symbolType::Void;
-    }
-}
-
-CallFunASTNode::CallFunASTNode(char *value, AST *varList)
-    : AST(value, ASTNodeType::callFunc)
-{
-    this->varList = varList;
-    if (varList != NULL) {
-        varList->set_parent(this);
-    }
-}
-
-CallFunASTNode::CallFunASTNode(char *value, char *var)
-    : AST(value, ASTNodeType::callFunc)
-{
-    this->varList = varList;
-    if (varList != NULL) {
-        varList->set_parent(this);
-    }
-}
-
-void CallFunASTNode::print_info(int depth) {
-    cout << "Call Function." << this->value << endl;
-    AST *var = this->varList;
-    while (var != NULL) {
-        AST::print_tree(var, depth + 1);
-        var = var->peer;
-    }
+  cout << this->value << "  return  " << this->return_type << endl;
 }
 
 VarASTNode::VarASTNode(char *value, AST *node)
