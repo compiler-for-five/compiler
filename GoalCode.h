@@ -7,9 +7,8 @@
 #include <map>
 #include "AsmCode.h"
 #include "symbol.h"
-#include "Quad.h"
+#include "MiddleCode.h"
 
-// assembly language，缩写为 asm，中文译为汇编语言
 enum class asmRegister {
 	unset = -1,
 	eax = 1,
@@ -26,9 +25,7 @@ private:
 	std::string transRegister(asmRegister reg);
 public:
 	AsmCode();
-    // 生成变量 
 	std::string generateVar(int offset);
-	// 生成数字实例
 	std::string generateInstanceNumber(int value);
 	void generateBinaryInstructor(std::string instructor, asmRegister reg1, asmRegister reg2);
 	void generateBinaryInstructor(std::string instructor, asmRegister reg, std::string var);
@@ -63,7 +60,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const AsmCode& asmcode);
 };
 
-class AsmGenerator
+class GoalCode
 {
 private:
 	int eax;
@@ -71,7 +68,7 @@ private:
 	int ecx;
 	int edx;
 	AsmCode asmcode;
-	std::string registerUsedVar[6]; // 哪个变量用了哪个寄存器，是决定从变量拿还是寄存器拿数据的关键
+	std::string registerUsedVar[6];
 	std::vector<symbol*> tempVar;
 	std::vector<Quad> quads;
 	std::map<int, int> labelMap;
@@ -94,7 +91,7 @@ private:
 	bool isJumpQuad(OpCode code);
 public:
 	inline AsmCode& getAsmCode() { return this->asmcode; }
-	AsmGenerator(std::vector<Quad>& quads, std::vector<symbol*>& tempVar, SymbolTable* rootTable);
+	GoalCode(std::vector<Quad>& quads, std::vector<symbol*>& tempVar, SymbolTable* rootTable);
 	void generate();
 };
 

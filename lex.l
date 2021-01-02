@@ -99,7 +99,7 @@ int { yylval.str=strdup(yytext); return(TYPE);}
 {NOT} {return NOT;}
 {SINGNALAND} {return SINGNALAND;}
 {ID} {yylval.str=strdup(yytext);return ID;}
-{ERRORCHAR} {printf("Error type A at line %d: Mystirious charachter '%s'\n",yylineno,yytext);}
+{ERRORCHAR} {;}
 
 %%
 int yywrap(){    

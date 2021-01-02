@@ -160,6 +160,7 @@ LoopASTNode::LoopASTNode(char *value,
         this->add_child_node(body);
     this->condition = condition;
     this->declare = NULL;
+    this->body = body;
     this->action = NULL;
 }
 
@@ -175,6 +176,7 @@ LoopASTNode::LoopASTNode(char *value,
     this->condition = condition;
     this->declare = declare;
     this->action = action;
+    this->body = body;
     if (declare != NULL) {
         declare->set_parent(this);
         this->add_child_node(declare);
