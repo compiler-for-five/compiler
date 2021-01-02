@@ -1,3 +1,4 @@
+%x COMMENT
 %{
 #include "stdio.h"
 #include "stdlib.h"
@@ -48,14 +49,18 @@ digit   [0-9]
 letter  [A-Za-z_]
 ID  {letter}({letter}|{digit})*
 NUMBER {digit}+
-tips  [/][\*]([^\*]|([\*])*[^\*/])*([\*])*[\*][/]
-single_tips [/][/]([^a]|[a])*[\n]
+ws    {delim}+
+PRINT print_int
 
 %%
+"/*"           { BEGIN(COMMENT) ; }
+<COMMENT>"*/"  { BEGIN(INITIAL); }
+<COMMENT>{ws}   {printf("inside commenet ws\n");}
+<COMMENT>([^*]|\en)+|.
+<COMMENT><<EOF>>    {printf("Unterminated comment\n"); return 0;}
+\/\/.*$  {}
 {NEWLINE} {}
 {whitespace} {;}
-{tips} {;}
-{single_tips} {;}
 {COMMA} {return COMMA;}
 {WHILE} {return WHILE;}
 {DO} {return DO;}
@@ -63,6 +68,7 @@ single_tips [/][/]([^a]|[a])*[\n]
 {THEN} {return THEN;}
 {ELSE} {return ELSE;}
 {FOR} {return FOR;}
+print_int {return PRINT;}
 {VOID} {yylval.str=strdup(yytext);return VOID;}
 {MAIN} {yylval.str=strdup(yytext);return MAIN;}
 int { yylval.str=strdup(yytext); return(TYPE);}

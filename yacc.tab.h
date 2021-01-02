@@ -69,30 +69,31 @@ extern int yydebug;
     ID = 275,
     NUMBER = 276,
     MAIN = 277,
-    EQ = 278,
-    OR = 279,
-    AND = 280,
-    LT = 281,
-    LE = 282,
-    GT = 283,
-    GE = 284,
-    EQUEL = 285,
-    NE = 286,
-    DEC = 287,
-    ADD = 288,
-    DIV = 289,
-    STAR = 290,
-    MOD = 291,
-    EXP = 292,
-    NOT = 293,
-    LB = 294,
-    RB = 295,
-    MLB = 296,
-    MRB = 297,
-    BLB = 298,
-    BRB = 299,
-    UMINUS = 300,
-    UPLUS = 301
+    PRINT = 278,
+    EQ = 279,
+    OR = 280,
+    AND = 281,
+    LT = 282,
+    LE = 283,
+    GT = 284,
+    GE = 285,
+    EQUEL = 286,
+    NE = 287,
+    DEC = 288,
+    ADD = 289,
+    DIV = 290,
+    STAR = 291,
+    MOD = 292,
+    EXP = 293,
+    NOT = 294,
+    LB = 295,
+    RB = 296,
+    MLB = 297,
+    MRB = 298,
+    BLB = 299,
+    BRB = 300,
+    UMINUS = 301,
+    UPLUS = 302
   };
 #endif
 
@@ -105,7 +106,7 @@ union YYSTYPE
 struct AST* a;
 char* str;
 
-#line 109 "yacc.tab.h"
+#line 110 "yacc.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
