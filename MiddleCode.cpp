@@ -1,19 +1,17 @@
-#include "InterMediate.h"
+#include "MiddleCode.h"
 #include <typeinfo>
 #include <cstdio>
-InterMediate::InterMediate(RootASTNode *rootNode,  SymbolTable *symbolTable)
+#include <string.h>
+MiddleCode::MiddleCode(RootASTNode *rootNode,  SymbolTable *symbolTable)
 {
     tempVar.reserve(100);
     this->root = rootNode;
+    this->rootType = rootNode->return_type;
     this->rootTable = symbolTable;//获得根结点所在的符号表
 }
 
-void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
+void MiddleCode::Generate(AST* node, SymbolTable *symbolTable)
 {
-    if (node == NULL)
-    {
-        std::cout << "NULL" << std::endl;
-    }
     if (node == NULL)
         return;
     AST *p = node->child;
@@ -79,16 +77,6 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
     case ASTNodeType::defVar:
     {
         DefVarASTNode *tempNode = (DefVarASTNode *)node;
-        /*
-        if (tempNode->type == symbolType::Array)
-        {
-            symbolTable->addArraySymbol(tempNode);
-        }
-        else
-        {
-            symbolTable->addSymbol(tempNode->value, tempNode->type);
-        }
-        */
         symbol *varSymbol = symbolTable->findSymbol(node->value);
         if (p != NULL)
         {
@@ -110,8 +98,7 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
             }
             else
             {
-                std::cout << "\033[31mError: \033[0m"
-                          << "Type error" << std::endl;
+                std::cout << "Error："<<"Type error" << std::endl;
                 exit(1);
             }
             this->quads.push_back(*temp);
@@ -154,11 +141,7 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
             trueList.pop();
             falseList.pop();
             backpatch(&JudgeTrue, JudgeTrue.back() + 2);
-            while (p != NULL)
-            {
-                Generate(p, childTable);
-                p = p->peer;
-            }
+            Generate(((LoopASTNode*)node)->body,childTable);
             Generate(((LoopASTNode *)node)->action, childTable);
             Quad *temp = new Quad(OpCode::JUMP, start);
             this->quads.push_back(*temp);
@@ -176,8 +159,8 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
             backpatch(&JudgeTrue, JudgeTrue.back() + 2);
             while (p != NULL)
             {
-                Generate(p, symbolTable->createChildTable());
                 p = p->peer;
+                Generate(p, symbolTable->createChildTable());
             }
 
             Quad *temp = new Quad(OpCode::JUMP, start);
@@ -241,7 +224,7 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
     }
 }
 
-SymbolTable *InterMediate::GenerateStmt(StmtASTNode *node, SymbolTable *symbolTable)//干嘛用的
+SymbolTable *MiddleCode::GenerateStmt(StmtASTNode *node, SymbolTable *symbolTable)//干嘛用的
 {
     switch (node->type)
     {
@@ -258,8 +241,21 @@ SymbolTable *InterMediate::GenerateStmt(StmtASTNode *node, SymbolTable *symbolTa
     return symbolTable;
 }
 
-SymbolTable *InterMediate::GenerateReturn(StmtASTNode *node, SymbolTable *symbolTable)
+SymbolTable *MiddleCode::GenerateReturn(StmtASTNode *node, SymbolTable *symbolTable)
 {
+    if(strcmp(rootType,"void")==0){
+      if(node->child != NULL){
+        std::cout<<"Error! Void cannot have a return value"<<endl;
+        exit(1);
+      };
+    }
+    if(strcmp(rootType,"int")==0){
+      if(node->child == NULL){
+        std::cout<<"Error! Int should have a return value"<<endl;
+        exit(1);
+      };
+      is_return = 1;
+    }
     AST *p = node->child;
     Quad *temp;
     symbol *result = new symbol("Temp" + std::to_string(tempVar.size()), symbolType::integer);
@@ -285,14 +281,13 @@ SymbolTable *InterMediate::GenerateReturn(StmtASTNode *node, SymbolTable *symbol
     }
     else
     {
-        std::cout << "\033[31mError: \033[0m"
-                  << "Type error" << std::endl;
+        std::cout <<"Error：" <<"Type error" << std::endl;
         exit(1);
     }
     quads.push_back(*temp);
 }
 
-symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable)
+symbol *MiddleCode::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable)
 {
     Quad *temp;
     AST *arg1Node, *arg2Node;
@@ -312,8 +307,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             op = OpCode::ASSIGN;
             if (node->child->nodeType != ASTNodeType::assignVar)
             {
-                std::cout << "\033[31mError: \033[0m"
-                          << node->child->value << " is not a variable. What are u doing?" << std::endl;
+                std::cout <<"Error："  <<node->child->value << " is not a variable. What are u doing?" << std::endl;
                 exit(1);
             }
             result = symbolTable->findSymbol(node->child->value);//符号表返回什么东西？
@@ -325,8 +319,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             symbol *arg1 = symbolTable->findSymbol(arg1Node->value);
             if (result->getIdType() == symbolType::integer && arg1->getIdType() == symbolType::pointer)
             {
-                std::cout << "\033[31mError: \033[0m"
-                          << "Syntax error, maybe you have used the wrong type: " << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
+                std::cout <<"Error："  << "Syntax error, maybe you have used the wrong type: " << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
                 exit(1);
             }
             temp = new Quad(op, arg1, result);
@@ -343,8 +336,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         }
         else
         {
-            std::cout << "\033[31mError: \033[0m"
-                      << "No match type of" << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
+            std::cout <<"Error："  << "No match type of" << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
             exit(1);
         }
         this->quads.push_back(*temp);
@@ -356,8 +348,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         symbol *result;
         if (node->child->nodeType != ASTNodeType::op)
         {
-            std::cout << "\033[31mError: \033[0m"
-                      << node->value << " syntax error. What are u doing?" << std::endl;
+            std::cout <<"Error："  << node->value << " syntax error. What are u doing?" << std::endl;
         }
         result = GenerateOp((OperatorASTNode *)node->child, symbolTable);
         AST *arg1Node = node->child->peer;
@@ -380,8 +371,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         }
         else
         {
-            std::cout << "\033[31mError: \033[0m"
-                      << "No match type of" << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
+            std::cout <<"Error：" << "No match type of" << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
             exit(1);
         }
         this->quads.push_back(*temp);
@@ -529,8 +519,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         }
         else
         {
-            std::cout << "\033[31mError: \033[0m"
-                      << " lvalue required as unary ‘&’ operand" << std::endl;
+            std::cout <<"Error："  << " lvalue required as unary ‘&’ operand" << std::endl;
             exit(1);
         }
         this->quads.push_back(*temp);
@@ -602,8 +591,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         }
         else
         {
-            std::cout << "\033[31mError: \033[0m"
-                      << " lvalue required as unary ‘&’ operand" << std::endl;
+            std::cout <<"Error："  << " lvalue required as unary ‘&’ operand" << std::endl;
             exit(1);
         }
         this->quads.push_back(*temp);
@@ -637,7 +625,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             }
             else
             {
-                std::cout << "\033[31mError: \033[0m"
+                std::cout << "Error："
                           << "Type error" << std::endl;
                 exit(1);
             }
@@ -662,7 +650,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             }
             else
             {
-                std::cout << "\033[31mError: \033[0m"
+                std::cout << "Error："
                           << "Type error" << std::endl;
                 exit(1);
             }
@@ -677,7 +665,7 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
     return NULL;
 }
 
-Quad *InterMediate::CaculateOp(OpCode op, AST *arg1Node, AST *arg2Node, symbol *result, SymbolTable *symbolTable)
+Quad *MiddleCode::CaculateOp(OpCode op, AST *arg1Node, AST *arg2Node, symbol *result, SymbolTable *symbolTable)
 {
     Quad *temp;
     if (arg1Node->nodeType == ASTNodeType::assignVar && arg2Node->nodeType == ASTNodeType::assignVar)
@@ -737,14 +725,14 @@ Quad *InterMediate::CaculateOp(OpCode op, AST *arg1Node, AST *arg2Node, symbol *
     }
     else
     {
-        std::cout << "\033[31mError: \033[0m"
+        std::cout << "Error："
                   << "No match type for" << (int)arg1Node->nodeType << "  value:" << arg1Node->value << std::endl;
         exit(1);
     }
     return temp;
 }
 
-void InterMediate::RelopOp(Quad *trueQuad, Quad *falseQuad, OpCode op, AST *arg1Node, AST *arg2Node, SymbolTable *symbolTable)
+void MiddleCode::RelopOp(Quad *trueQuad, Quad *falseQuad, OpCode op, AST *arg1Node, AST *arg2Node, SymbolTable *symbolTable)
 {
     if (arg1Node->nodeType == ASTNodeType::assignVar && arg2Node->nodeType == ASTNodeType::assignVar)
     {
@@ -780,18 +768,19 @@ void InterMediate::RelopOp(Quad *trueQuad, Quad *falseQuad, OpCode op, AST *arg1
     return;
 }
 
-std::list<int> *InterMediate::makelist(int index)//创建一个列表
+std::list<int> *MiddleCode::makelist(int index)//创建一个列表
 {
     std::list<int> *jumpList = new std::list<int>();
     jumpList->push_back(index);
     return jumpList;
 }
-std::list<int> *InterMediate::merge(std::list<int> *list1, std::list<int> *list2)//将list1和list2合并
+std::list<int> *MiddleCode::merge(std::list<int> *list1, std::list<int> *list2)//将list1和list2合并
 {
     list1->merge(*list2);//按照升序排序，最后一个下标最大
     return list1;
+    
 }
-void InterMediate::backpatch(std::list<int> *backList, int target)//将目标序号填入list语句
+void MiddleCode::backpatch(std::list<int> *backList, int target)//将目标序号填入list语句
 {
     std::list<int>::iterator it;
     for (it = backList->begin(); it != backList->end(); it++)
@@ -800,8 +789,12 @@ void InterMediate::backpatch(std::list<int> *backList, int target)//将目标序
     }
     return;
 }
-void InterMediate::printQuads()//从列表开始到最后依次打印四元组
+void MiddleCode::printQuads()//从列表开始到最后依次打印四元组
 {
+  if(strcmp(rootType,"int") == 0 && is_return != 1){
+    cout<<"Error! Don't have return value"<<endl;
+    exit(1);
+  }
     std::vector<Quad>::iterator it;
     std::cout << "\t   Operator   \targ1\targ2\tresult" << std::endl;
     int count = 0;
@@ -811,4 +804,241 @@ void InterMediate::printQuads()//从列表开始到最后依次打印四元组
         it->printQuad();
     }
     return;
+}
+Quad::Quad(OpCode op, int result)
+{
+  this->op = op;
+  this->arg1.var = NULL;
+  this->arg2.var = NULL;
+  this->result.target = result;
+  this->flag = 3;
+}
+
+Quad::Quad(OpCode op, symbol *arg1, symbol *result)
+{
+  this->op = op;
+  this->arg1.var = arg1;
+  this->arg2.var = NULL;
+  this->result.var = result;
+  this->flag = 7;
+}
+
+Quad::Quad(OpCode op, int arg1, symbol *result)
+{
+  this->op = op;
+  this->arg1.target = arg1;
+  this->arg2.var = NULL;
+  this->result.var = result;
+  this->flag = 6;
+}
+
+Quad::Quad(OpCode op, symbol *arg1, symbol *arg2, symbol *result)
+{
+  this->op = op;
+  this->arg1.var = arg1;
+  this->arg2.var = arg2;
+  this->result.var = result;
+  this->flag = 7;
+}
+
+Quad::Quad(OpCode op, int arg1, symbol *arg2, symbol *result)
+{
+  this->op = op;
+  this->arg1.target = arg1;
+  this->arg2.var = arg2;
+  this->result.var = result;
+  this->flag = 6;
+}
+
+Quad::Quad(OpCode op, symbol *arg1, int arg2, symbol *result)
+{
+  this->op = op;
+  this->arg1.var = arg1;
+  this->arg2.target = arg2;
+  this->result.var = result;
+  this->flag = 5;
+}
+Quad::Quad(OpCode op, int arg1, int arg2, symbol *result)
+{
+  this->op = op;
+  this->arg1.target = arg1;
+  this->arg2.target = arg2;
+  this->result.var = result;
+  this->flag = 4;
+}
+
+Quad::Quad(OpCode op, symbol *arg1, symbol *arg2, int result)
+{
+  this->op = op;
+  this->arg1.var = arg1;
+  this->arg2.var = arg2;
+  this->result.target = result;
+  this->flag = 3;
+}
+Quad::Quad(OpCode op, symbol *arg1, int arg2, int result)
+{
+  this->op = op;
+  this->arg1.var = arg1;
+  this->arg2.target = arg2;
+  this->result.target = result;
+  this->flag = 1;
+}
+Quad::Quad(OpCode op, int arg1, int arg2, int result)
+{
+  this->op = op;
+  this->arg1.target = arg1;
+  this->arg2.target = arg2;
+  this->result.target = result;
+  this->flag = 0;
+}
+std::string Quad::printOp()
+{
+  switch (this->op)
+  {
+  case OpCode::JUMP:
+    return "     JUMP     ";
+  case OpCode::JUMP_SMALL:
+    return "  JUMP_SMALL  ";
+  case OpCode::JUMP_EQ_SMALL:
+    return "JUMP_EQ_SMALL ";
+  case OpCode::JUMP_GREAT:
+    return "  JUMP_GREAT  ";
+  case OpCode::JUMP_EQ_GREAT:
+    return "JUMP_EQ_GREAT ";
+  case OpCode::JUMP_EQUAL:
+    return "  JUMO_EQUAL  ";
+  case OpCode::JUMP_NOT_EQUAL:
+    return "JUMP_NOT_EQUAL";
+  case OpCode::PLUS:
+    return "     PLUS     ";
+  case OpCode::MINUS:
+    return "    MINUS     ";
+  case OpCode::TIMES:
+    return "    TIMES     ";
+  case OpCode::DIV:
+    return "     DIV      ";
+  case OpCode::MOD:
+    return "     MOD      ";
+  case OpCode::POWER:
+    return "    POWER     ";
+  case OpCode::NEGATIVE:
+    return "   NEGATIVE   ";
+  case OpCode::ASSIGN:
+    return "    ASSIGN    ";
+  case OpCode::ASSIGN_ARRAY:
+    return " ASSIGN_ARRAY ";
+  case OpCode::GET_ADDRESS:
+    return " GET_ADDRESS  ";
+  case OpCode::ASSIGN_POINTER:
+    return "ASSIGN_POINTER";
+  case OpCode::PARAM:
+    return "    PARAM     ";
+  case OpCode::CALL:
+    return "     CALL     ";
+  case OpCode::RETURN:
+    return "    RETURN    ";
+  case OpCode::LABEL:
+    return "     LABEL    ";
+  case OpCode::GET_VALUE:
+    return "  GET_VALUE   ";
+  case OpCode::GET_ARRAY:
+    return "  GET_ARRAY   ";
+  default:
+    break;
+  }
+}
+void Quad::printQuad()
+{
+  switch (this->flag)
+  {
+  case 0:
+  {
+    std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t" << this->result.target << std::endl;
+    break;
+  }
+  case 1:
+  {
+    if (arg1.var == NULL)
+      std::cout << this->printOp() << "\t-\t" << this->arg2.target << "\t" << this->result.target << std::endl;
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.target << "\t" << this->result.target << std::endl;
+    break;
+  }
+  case 2:
+  {
+    if (arg2.var == NULL)
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t-\t" << this->result.target << std::endl;
+    break;
+  }
+  case 3:
+  {
+    if (arg1.var == NULL)
+    {
+      if (arg2.var == NULL)
+        std::cout << this->printOp() << "\t-\t-\t" << this->result.target << std::endl;
+      else
+        std::cout << this->printOp() << "\t-\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
+    }
+    else
+    {
+      if (arg2.var == NULL)
+        std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t-\t" << this->result.target << std::endl;
+      else
+        std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
+    }
+    break;
+  }
+  case 4:
+  {
+    if (result.var == NULL)
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t-" << std::endl;
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t" << this->result.var->getIdName() << std::endl;
+  }
+  break;
+  case 5:
+  {
+    if (arg1.var == NULL)
+      std::cout << this->printOp() << "\t-\t" << this->arg2.target << "\t";
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.target << "\t";
+
+    if (result.var == NULL)
+      std::cout << "-" << std::endl;
+    else
+      std::cout << this->result.var->getIdName() << std::endl;
+  }
+  break;
+  case 6:
+  {
+    if (arg2.var == NULL)
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t-\t";
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.var->getIdName() << "\t";
+    if (result.var == NULL)
+      std::cout << "-" << std::endl;
+    else
+      std::cout << this->result.var->getIdName() << std::endl;
+  }
+  break;
+  case 7:
+  {
+    if (arg1.var == NULL)
+      std::cout << this->printOp() << "\t-\t";
+    else
+      std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t";
+    if (arg2.var == NULL)
+      std::cout << "-\t";
+    else
+      std::cout << this->arg2.var->getIdName() << "\t";
+    if (result.var == NULL)
+      std::cout << "-" << std::endl;
+    else
+      std::cout << this->result.var->getIdName() << std::endl;
+  }
+  default:
+    break;
+  }
 }

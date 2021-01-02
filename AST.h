@@ -86,6 +86,7 @@ public:
     AST *condition; //循环条件
     AST *declare;  //变量声明
     AST *action;  //循环后的动作（同i++）
+    AST *body;
     LoopASTNode(char *value, LoopType type, AST *body, AST* condition, bool iswhile);  //对while
     LoopASTNode(char *value, LoopType type, AST *body, AST* declare = NULL, AST* condition = NULL, AST* action = NULL);  //对for
     void print_info(int depth);

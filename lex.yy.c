@@ -1069,7 +1069,7 @@ YY_RULE_SETUP
 case 46:
 YY_RULE_SETUP
 #line 102 "lex.l"
-{printf("Error type A at line %d: Mystirious charachter '%s'\n",yylineno,yytext);}
+{;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP

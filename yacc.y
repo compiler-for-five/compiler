@@ -6,8 +6,8 @@
 #include "AST.h"
 #include "symbol.h"
 #include <string.h>
-#include "InterMediate.h"
-#include "AsmGenerator.h"
+#include "MiddleCode.h"
+#include "GoalCode.h"
 int yyerror(char *s);
 int yylex();
 extern FILE * yyin;
@@ -52,12 +52,12 @@ Result:Program
         cout<<"符号表："<<endl;
         table->printSymbolTable();
         cout<<endl;
-        InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
+        MiddleCode* mediate = new MiddleCode((RootASTNode*)root, table);  
         mediate->Generate(mediate->getRoot(), mediate->getTable());
         cout<<"四元式："<<endl;
         mediate->printQuads();
         cout<<endl;
-        AsmGenerator* asmgenerator = new AsmGenerator(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
+        GoalCode* asmgenerator = new GoalCode(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
         asmgenerator->generate();
         cout << asmgenerator->getAsmCode();
 

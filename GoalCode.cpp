@@ -1,10 +1,9 @@
-#include "AsmGenerator.h"
+#include "GoalCode.h"
 
 AsmCode::AsmCode() {
 
 }
 
-// �Ĵ���ת��������ת��Ϊ�궨��
 std::string AsmCode::transRegister(asmRegister reg) {
 	if (reg == asmRegister::eax) return ASM_EAX;
 	else if (reg == asmRegister::ebx) return ASM_EBX;
@@ -15,9 +14,8 @@ std::string AsmCode::transRegister(asmRegister reg) {
 	else return "";
 }
 
-// ���ɱ���
 std::string AsmCode::generateVar(int offset) {
-	std::string ans = ASM_LB + std::string(ASM_EBP); // [ebp ===== ebp��ַָ��Ĵ���
+	std::string ans = ASM_LB + std::string(ASM_EBP); 
 	if (offset > 0) {
 		ans += "-";
 		ans += std::to_string(offset);
@@ -30,140 +28,107 @@ std::string AsmCode::generateVar(int offset) {
 	// ans = [ebp +/- offset]
 	return ans;
 }
- //��������ʵ��
 std::string AsmCode::generateInstanceNumber(int value) {
 	std::string ans = DOUBLE_WORD;   //˫�ֽڳ���
 	ans += " " + std::to_string(value);
-	// ans = dword  value
 	return ans;
 }
 
-// ����˫ָ��
-// codeBuffer �����ǰ�Ķ���
 void AsmCode::generateBinaryInstructor(std::string instructor, asmRegister reg1, asmRegister reg2) {
 	this->codeBuffer += instructor + std::string(" ") + this->transRegister(reg1)
 		+ "," + this->transRegister(reg2) + "\n";
-	// mov eax ��ebx 
 }
 
-// �ѱ�����Ĵ��������㣺
-// add eax��12
 void AsmCode::generateBinaryInstructor(std::string instructor, asmRegister reg, std::string var) {
 	this->codeBuffer += instructor + std::string(" ") + this->transRegister(reg)
 		+ "," + var + "\n";
 }
 
-// �Ĵ��������������
-// add 12��eax 
 void AsmCode::generateBinaryInstructor(std::string instructor, std::string var, asmRegister reg) {
 	this->codeBuffer += instructor + std::string(" ") + var
 		+ "," + this->transRegister(reg) + "\n";
 }
 
-// ������������
-// add 12, 13
+
 void AsmCode::generateBinaryInstructor(std::string instructor, std::string var1, std::string var2) {
 	this->codeBuffer += instructor + " " + var1 +
 		+ASM_COMMA + var2 + "\n";
 }
 
-// ���ɵ�����ָ��
-// add eax
 void AsmCode::generateUnaryInstructor(std::string instructor, asmRegister reg) {
 	this->codeBuffer += instructor + " " + this->transRegister(reg) + "\n";
 }
 
-// ������ָ��
-// add 12
+
 void AsmCode::generateUnaryInstructor(std::string instructor, std::string var) {
 	this->codeBuffer += instructor + " " + var + "\n";
 }
 
-// ͨ����ַ��ֵ
-// [ ebx ]
 std::string AsmCode::findValueByAddress(asmRegister reg) {
 	return ASM_LB + this->transRegister(reg) + ASM_RB;
 }
 
-// �Ӵ���
 void AsmCode::addCode(std::string code) {
 	this->codeBuffer += code;
 	this->codeBuffer += "\n";
 }
 
-// �Ĵ������ָ�add eax ebx
 void AsmCode::add(asmRegister reg1, asmRegister reg2) {
 	this->generateBinaryInstructor(ASM_ADD, reg1, reg2);
 }
 
-//ָ��ͱ������: add eax 12
 void AsmCode::add(asmRegister reg, std::string var) {
 	this->generateBinaryInstructor(ASM_ADD, reg, var);
 }
 
-// �Ĵ������ָ��: sub eax ebx
 void AsmCode::sub(asmRegister reg1, asmRegister reg2) {
 	this->generateBinaryInstructor(ASM_SUB, reg1, reg2);
 }
 
-//ָ��ͱ��������sub eax 12
 void AsmCode::sub(asmRegister reg, std::string var) {
 	this->generateBinaryInstructor(ASM_SUB, reg, var);
 }
 
-// �Ĵ����ƶ�ָ�mov eax abx
 void AsmCode::mov(asmRegister reg1, asmRegister reg2) {
 	this->generateBinaryInstructor(ASM_MOV, reg1, reg2);
 }
 
-//�����ƶ����Ĵ����� mov eax 12
 void AsmCode::mov(asmRegister reg, std::string var) {
 	this->generateBinaryInstructor(ASM_MOV, reg, var);
 }
 
-// �Ĵ����ƶ����������ڴ棩: mov 12 eax
 void AsmCode::mov(std::string var, asmRegister reg) {
 	this->generateBinaryInstructor(ASM_MOV, var, reg);
 }
-// �����ƶ���mov 12 13
 void AsmCode::mov(std::string var1, std::string var2) {
 	this->generateBinaryInstructor(ASM_MOV, var1, var2);
 }
 
-// Save the answer to eax : mul eax
 void AsmCode::mul(asmRegister reg1, asmRegister reg2) {
-	//�����Ĵ�����λ���
 	this->asmXor(asmRegister::edx, asmRegister::edx);
-	// reg��ֵ�ƶ���eax
 	this->mov(asmRegister::eax, reg1);
 	this->generateUnaryInstructor(ASM_MUL, reg2);
 }
 
 
 void AsmCode::mul(asmRegister reg, std::string var) {
-	// �����Ĵ�����λ���
 	this->asmXor(asmRegister::edx, asmRegister::edx);
-	// reg��ֵ�ƶ���eax
 	this->mov(asmRegister::eax, reg);
-	// mul dword variable: mul dword12
 	this->generateUnaryInstructor(ASM_MUL, DOUBLE_WORD + var);
 }
 
-// �˷�
 void AsmCode::mul(std::string var1, std::string var2) {
 	this->asmXor(asmRegister::edx, asmRegister::edx);
 	this->mov(asmRegister::eax, var1);
 	this->generateUnaryInstructor(ASM_MUL, DOUBLE_WORD + var2);
 }
 
-// ����
 void AsmCode::div(asmRegister reg1, asmRegister reg2) {
 	this->asmXor(asmRegister::edx, asmRegister::edx);
 	this->mov(asmRegister::eax, reg1);
 	this->generateUnaryInstructor(ASM_DIV, reg2);
 }
 
-// ����
 void AsmCode::div(asmRegister reg, std::string var) {
 	this->asmXor(asmRegister::edx, asmRegister::edx);
 	this->mov(asmRegister::eax, reg);
@@ -192,29 +157,24 @@ void AsmCode::push(asmRegister reg) {
 	this->generateUnaryInstructor(ASM_PUSH, reg);
 }
 
-// push����: push 12
 void AsmCode::push(std::string var) {
 	this->generateUnaryInstructor(ASM_PUSH, var);
 }
 
-//����popָ�pop eax
 void AsmCode::pop(asmRegister reg) {
 	this->generateUnaryInstructor(ASM_POP, reg);
 }
 
-// label : \n 
 void AsmCode::label(std::string label) {
 	this->codeBuffer += label + ASM_COLON + "\n";
 }
 
-// ���
 std::ostream& operator<<(std::ostream& os, const AsmCode& code) {
 	os << code.codeBuffer;
 	return os;
 }
 
-// ���캯��
-AsmGenerator::AsmGenerator(std::vector<Quad>& quads, std::vector<symbol*>& tempVar, SymbolTable* rootTable) 
+GoalCode::GoalCode(std::vector<Quad>& quads, std::vector<symbol*>& tempVar, SymbolTable* rootTable) 
 {
 	this->quads = quads;
 	this->tempVar = tempVar;
@@ -226,8 +186,7 @@ AsmGenerator::AsmGenerator(std::vector<Quad>& quads, std::vector<symbol*>& tempV
 	edx = 0;
 }
 
-// �ͷżĴ���
-void AsmGenerator::releaseRegister(asmRegister reg) {
+void GoalCode::releaseRegister(asmRegister reg) {
 	if (reg == asmRegister::ebx) {
 		ebx = 0;
 		int index = (int)asmRegister::ebx;
@@ -241,7 +200,7 @@ void AsmGenerator::releaseRegister(asmRegister reg) {
 }
 
 // �õ��Ĵ���
-asmRegister AsmGenerator::getRegister(std::string var) {
+asmRegister GoalCode::getRegister(std::string var) {
 	if (ebx == 0) {
 		ebx = 1;
 		int index = (int)asmRegister::ebx;
@@ -256,8 +215,7 @@ asmRegister AsmGenerator::getRegister(std::string var) {
 	}
 }
 
-// �ҵ��Ĵ���
-asmRegister AsmGenerator::findRegister(std::string var) {
+asmRegister GoalCode::findRegister(std::string var) {
 	for (int i = 0; i < 6; i++) {
 		if (this->registerUsedVar[i] == var) {
 			return asmRegister(i + 1);
@@ -265,21 +223,17 @@ asmRegister AsmGenerator::findRegister(std::string var) {
 	}
 }
 
-// ������������
-void AsmGenerator::generateArithmetic(Quad& q) {
-	std::string instructor;  //ָ��
-	OpCode opcode = q.getOpCode();// �õ���Ԫʽ��code
-	int flag = q.getFlag(); //�����flag��ʾ�˲�ͬ�����
-	// Special case, assign operate is unary operator. ��Ԫ�����
+void GoalCode::generateArithmetic(Quad& q) {
+	std::string instructor;  
+	OpCode opcode = q.getOpCode();
+	int flag = q.getFlag(); 
 	if (opcode == OpCode::ASSIGN) {
 		symbol* result = q.getArg(3).var;
 		int offset = result->getOffset();
 		std::string result_ebp_offset = this->asmcode.generateVar(offset);
 		if (flag == 7) {
-			// ��ʱ����
 			std::string tempVar = q.getArg(1).var->getIdName();
 			if (tempVar[0] == 'T') {
-				// �����һ���ַ�ΪT����û��offset��
 				asmRegister tempVarReg = this->findRegister(tempVar);
 				this->asmcode.mov(result_ebp_offset, tempVarReg);
 				this->releaseRegister(tempVarReg);
@@ -645,7 +599,7 @@ void AsmGenerator::generateArithmetic(Quad& q) {
 		}
 	}
 }
-void AsmGenerator::generateSetArg(Quad& q) {
+void GoalCode::generateSetArg(Quad& q) {
 	int flag = q.getFlag();
 	std::string varName = "";
 	if (flag == 7) {
@@ -668,7 +622,7 @@ void AsmGenerator::generateSetArg(Quad& q) {
 	}
 }
 
-void AsmGenerator::generateJump(Quad& q) {
+void GoalCode::generateJump(Quad& q) {
 	OpCode opcode = q.getOpCode();
 	std::string label = "label" + std::to_string(labelMap[q.getArg(3).target]);
 	if (opcode == OpCode::JUMP) {
@@ -760,7 +714,7 @@ void AsmGenerator::generateJump(Quad& q) {
 	}
 }
 
-void AsmGenerator::generateNeg(Quad& q) {
+void GoalCode::generateNeg(Quad& q) {
 	std::string varName = q.getArg(1).var->getIdName();
 	std::string result = q.getArg(3).var->getIdName();
 	if (varName[0] == 'T' && result[0] == 'T') {
@@ -798,7 +752,7 @@ void AsmGenerator::generateNeg(Quad& q) {
 	}
 }
 
-void AsmGenerator::generatePower(Quad& q) {
+void GoalCode::generatePower(Quad& q) {
 	int flag = q.getFlag();
 	if (flag == 7) {
 		std::string var1Name = q.getArg(1).var->getIdName();
@@ -873,7 +827,7 @@ void AsmGenerator::generatePower(Quad& q) {
 	this->asmcode.add(asmRegister::esp, "8");
 }
 
-void AsmGenerator::generateGetAddress(Quad& q) {
+void GoalCode::generateGetAddress(Quad& q) {
 	int offset = q.getArg(1).var->getOffset();
 	std::string resultName = q.getArg(3).var->getIdName();
 	if (resultName[0] == 'T') {
@@ -889,7 +843,7 @@ void AsmGenerator::generateGetAddress(Quad& q) {
 }
 
 
-void AsmGenerator::generateGetArrayValue(Quad& q) {
+void GoalCode::generateGetArrayValue(Quad& q) {
 	std::string resultName = q.getArg(3).var->getIdName();
 	asmRegister reg = this->getRegister(resultName);
 	int baseOffset = q.getArg(1).var->getOffset();
@@ -932,7 +886,7 @@ void AsmGenerator::generateGetArrayValue(Quad& q) {
 	}
 }
 
-void AsmGenerator::generateAssignArray(Quad& q) {
+void GoalCode::generateAssignArray(Quad& q) {
 	int baseOffset = q.getArg(3).var->getOffset();
 	int flag = q.getFlag();
 	int totalOffset = baseOffset;
@@ -1019,7 +973,7 @@ void AsmGenerator::generateAssignArray(Quad& q) {
 	}
 }
 
-void AsmGenerator::preSetLabel() {
+void GoalCode::preSetLabel() {
 	std::vector<Quad> quad;
 	int labelNumber = 0;
 	for (size_t i = 0; i < quads.size(); i++) {
@@ -1042,14 +996,14 @@ void AsmGenerator::preSetLabel() {
 	quads = quad;
 }
 
-bool AsmGenerator::isJumpQuad(OpCode opcode) {
+bool GoalCode::isJumpQuad(OpCode opcode) {
 	return opcode == OpCode::JUMP || opcode == OpCode::JUMP_SMALL || opcode == OpCode::JUMP_EQ_SMALL ||
 		opcode == OpCode::JUMP_GREAT || opcode == OpCode::JUMP_EQ_GREAT || opcode == OpCode::JUMP_EQUAL ||
 		opcode == OpCode::JUMP_NOT_EQUAL;
 }
 
 // ����Ҫ�ģ����ɺ���
-void AsmGenerator::generate() {
+void GoalCode::generate() {
 	currentTable = rootTable;
 	// Set header info
 	//this->asmcode.addCode("\%include \"io/asm_io.inc\"\nsection .text\nglobal main\n");
