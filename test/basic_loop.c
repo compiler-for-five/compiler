@@ -2,12 +2,11 @@ int main() {
     int a, b = 1;
     int c = 3;
     i = 9;
-    void j=1;
     a = b + (10 / 2) ^ 3;
     if (a != 0) {
-        print(a);
+        print_int(a);
         while (a < 10 && b < 10) {
-            print(a);
+            print_int(a);
             a = a * b * c;
             b = b % 2;
         }
@@ -15,6 +14,6 @@ int main() {
             i = b + a;
         }
     }
-    print(a);
+    print_int(a);
     return a;
 }

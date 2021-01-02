@@ -1,12 +1,11 @@
 int main() {
     int a[10];
-    int i=0;
-    for (i; i < 10; i=i+1) {
+    for (int i=0; i < 10; i=i+1) {
         a[i] = i;
     }
-    i = 0;
+    int i=0;
     for (i; i < 10; i=i+1) {
-        print_int(a[i]);
+        print_int(a);
     }
     return 0;
 }

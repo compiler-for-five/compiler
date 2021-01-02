@@ -256,7 +256,7 @@ void SelectASTNode::print_info(int depth)
     }
 }
 
-PrintASTNode::PrintASTNode(char *value) {
+PrintASTNode::PrintASTNode(char *value) : AST(ASTNodeType::printInt) {
     this->value = value;
 }
 
