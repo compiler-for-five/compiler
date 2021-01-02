@@ -66,7 +66,6 @@ void AST::print_tree(AST *node, int depth)
 {
   if (node == NULL)
     return;
-  cout << (int)node->nodeType << "  " << typeid(*node).name() << "   " << "\t";
   cout << depth << "  ";
   for (int i = 0; i < depth; i++)
     cout << "  ";

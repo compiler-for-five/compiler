@@ -1,9 +1,8 @@
 int main(){
-    int a=0;
-    print_int(a);
-    //a=2;
-    a=3;
-    /*a=5;
-    a=6;*/
-    a=7;
+    int a=1;
+    int b=1;
+    while(a<10){
+        a=a+1;
+        int b=0;
+    }
 }

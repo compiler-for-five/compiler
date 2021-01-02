@@ -44,18 +44,22 @@ unary_expr unary_operator POW Bool_expr logical_and_expr logical_or_expr
 Result:Program
     {
         root = $1;
+        cout<<"语法树："<<endl;
         root->print_tree(root, 0);
+        cout<<endl;
         SymbolTable* symbolTable = new SymbolTable(NULL, true);
-        //table->printSymbolTable();
-        //SymbolTable* table = NULL;
         SymbolTable* table = symbolTable->buildSymbolTable(root);
+        cout<<"符号表："<<endl;
         table->printSymbolTable();
+        cout<<endl;
         InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
         mediate->Generate(mediate->getRoot(), mediate->getTable());
+        cout<<"四元式："<<endl;
         mediate->printQuads();
+        cout<<endl;
         AsmGenerator* asmgenerator = new AsmGenerator(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
         asmgenerator->generate();
-        std::cout << asmgenerator->getAsmCode();
+        cout << asmgenerator->getAsmCode();
 
 
     }

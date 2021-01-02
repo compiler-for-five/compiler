@@ -568,14 +568,14 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    44,    44,    63,    71,    75,    80,    87,    91,    96,
-     104,   108,   112,   116,   120,   126,   130,   134,   138,   142,
-     147,   167,   173,   177,   184,   192,   196,   202,   206,   211,
-     217,   225,   229,   237,   257,   261,   266,   270,   290,   294,
-     298,   306,   310,   318,   323,   330,   337,   344,   351,   358,
-     365,   370,   374,   381,   386,   391,   396,   401,   407,   414,
-     421,   426,   433,   440,   447,   452,   456,   464,   468,   472,
-     476
+       0,    44,    44,    67,    75,    79,    84,    91,    95,   100,
+     108,   112,   116,   120,   124,   130,   134,   138,   142,   146,
+     151,   171,   177,   181,   188,   196,   200,   206,   210,   215,
+     221,   229,   233,   241,   261,   265,   270,   274,   294,   298,
+     302,   310,   314,   322,   327,   334,   341,   348,   355,   362,
+     369,   374,   378,   385,   390,   395,   400,   405,   411,   418,
+     425,   430,   437,   444,   451,   456,   460,   468,   472,   476,
+     480
 };
 #endif
 
@@ -1465,172 +1465,176 @@ yyreduce:
 #line 45 "yacc.y"
     {
         root = (yyvsp[0].a);
+        cout<<"语法树："<<endl;
         root->print_tree(root, 0);
+        cout<<endl;
         SymbolTable* symbolTable = new SymbolTable(NULL, true);
-        //table->printSymbolTable();
-        //SymbolTable* table = NULL;
         SymbolTable* table = symbolTable->buildSymbolTable(root);
+        cout<<"符号表："<<endl;
         table->printSymbolTable();
+        cout<<endl;
         InterMediate* mediate = new InterMediate((RootASTNode*)root, table);  
         mediate->Generate(mediate->getRoot(), mediate->getTable());
+        cout<<"四元式："<<endl;
         mediate->printQuads();
+        cout<<endl;
         AsmGenerator* asmgenerator = new AsmGenerator(mediate->getQuads(), mediate->getTempVars(), mediate->getTable());
         asmgenerator->generate();
-        std::cout << asmgenerator->getAsmCode();
+        cout << asmgenerator->getAsmCode();
 
 
     }
-#line 1484 "yacc.tab.c"
+#line 1488 "yacc.tab.c"
     break;
 
   case 3:
-#line 64 "yacc.y"
+#line 68 "yacc.y"
     {
         RootASTNode* temp = new RootASTNode();
         temp->add_child_node((yyvsp[0].a));
         temp->return_type = (yyvsp[-4].str);
         (yyval.a) = temp;
     }
-#line 1495 "yacc.tab.c"
+#line 1499 "yacc.tab.c"
     break;
 
   case 4:
-#line 72 "yacc.y"
-    {
-        (yyval.str) = strdup((yyvsp[0].str));
-    }
-#line 1503 "yacc.tab.c"
-    break;
-
-  case 5:
 #line 76 "yacc.y"
     {
         (yyval.str) = strdup((yyvsp[0].str));
     }
-#line 1511 "yacc.tab.c"
+#line 1507 "yacc.tab.c"
+    break;
+
+  case 5:
+#line 80 "yacc.y"
+    {
+        (yyval.str) = strdup((yyvsp[0].str));
+    }
+#line 1515 "yacc.tab.c"
     break;
 
   case 6:
-#line 81 "yacc.y"
+#line 85 "yacc.y"
     {
         AST* compStmt = new StmtASTNode(StmtType::compStmt);
         compStmt->add_child_node((yyvsp[-1].a));
         (yyval.a) = compStmt;
     }
-#line 1521 "yacc.tab.c"
+#line 1525 "yacc.tab.c"
     break;
 
   case 7:
-#line 88 "yacc.y"
-    {
-        (yyval.a) = (yyvsp[0].a);
-    }
-#line 1529 "yacc.tab.c"
-    break;
-
-  case 8:
 #line 92 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1537 "yacc.tab.c"
+#line 1533 "yacc.tab.c"
+    break;
+
+  case 8:
+#line 96 "yacc.y"
+    {
+        (yyval.a) = (yyvsp[0].a);
+    }
+#line 1541 "yacc.tab.c"
     break;
 
   case 9:
-#line 97 "yacc.y"
+#line 101 "yacc.y"
     {
         if ((yyvsp[-1].a) == NULL) (yyval.a) = (yyvsp[0].a);
         else {
             (yyvsp[-1].a)->get_last_peer_node()->add_peer_node((yyvsp[0].a));
         }
     }
-#line 1548 "yacc.tab.c"
+#line 1552 "yacc.tab.c"
     break;
 
   case 10:
-#line 104 "yacc.y"
+#line 108 "yacc.y"
     {
         (yyval.a) = NULL;
     }
-#line 1556 "yacc.tab.c"
+#line 1560 "yacc.tab.c"
     break;
 
   case 11:
-#line 109 "yacc.y"
+#line 113 "yacc.y"
     {
         (yyval.a) = new SelectASTNode((char*)"", SelectType::_if, (yyvsp[0].a), (yyvsp[-2].a));
     }
-#line 1564 "yacc.tab.c"
+#line 1568 "yacc.tab.c"
     break;
 
   case 12:
-#line 113 "yacc.y"
+#line 117 "yacc.y"
     {
         (yyval.a) = new SelectASTNode((char*)"", SelectType::_if, (yyvsp[-2].a), (yyvsp[-4].a), (yyvsp[0].a));
     }
-#line 1572 "yacc.tab.c"
+#line 1576 "yacc.tab.c"
     break;
 
   case 13:
-#line 117 "yacc.y"
+#line 121 "yacc.y"
     {
         (yyval.a) = new PrintASTNode((char*)(yyvsp[-2].str));
     }
-#line 1580 "yacc.tab.c"
+#line 1584 "yacc.tab.c"
     break;
 
   case 14:
-#line 121 "yacc.y"
+#line 125 "yacc.y"
     {
         AST* temp = new StmtASTNode(StmtType::returnStmt);
         temp->add_child_node((yyvsp[-1].a));
         (yyval.a) = temp;
     }
-#line 1590 "yacc.tab.c"
+#line 1594 "yacc.tab.c"
     break;
 
   case 15:
-#line 127 "yacc.y"
+#line 131 "yacc.y"
     {
         (yyval.a) = new LoopASTNode((char*)"", LoopType::_while, (yyvsp[0].a), (yyvsp[-2].a), true);
     }
-#line 1598 "yacc.tab.c"
+#line 1602 "yacc.tab.c"
     break;
 
   case 16:
-#line 131 "yacc.y"
+#line 135 "yacc.y"
     {
         (yyval.a) = new LoopASTNode((char*)"", LoopType::_while, (yyvsp[-5].a), (yyvsp[-2].a), true);
     }
-#line 1606 "yacc.tab.c"
+#line 1610 "yacc.tab.c"
     break;
 
   case 17:
-#line 135 "yacc.y"
+#line 139 "yacc.y"
     {
         (yyval.a) = new LoopASTNode((char*)"", LoopType::_for, (yyvsp[0].a), (yyvsp[-6].a), (yyvsp[-4].a), (yyvsp[-2].a));
     }
-#line 1614 "yacc.tab.c"
+#line 1618 "yacc.tab.c"
     break;
 
   case 18:
-#line 139 "yacc.y"
-    {
-        (yyval.a) = (yyvsp[0].a);
-    }
-#line 1622 "yacc.tab.c"
-    break;
-
-  case 19:
 #line 143 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1630 "yacc.tab.c"
+#line 1626 "yacc.tab.c"
+    break;
+
+  case 19:
+#line 147 "yacc.y"
+    {
+        (yyval.a) = (yyvsp[0].a);
+    }
+#line 1634 "yacc.tab.c"
     break;
 
   case 20:
-#line 148 "yacc.y"
+#line 152 "yacc.y"
     {
         AST* temp = NULL;
         if ((yyvsp[-3].a)->nodeType == ASTNodeType::op) {
@@ -1649,112 +1653,112 @@ yyreduce:
         (yyvsp[-1].a)->set_parent(temp);
         (yyval.a) = temp;
     }
-#line 1653 "yacc.tab.c"
+#line 1657 "yacc.tab.c"
     break;
 
   case 21:
-#line 168 "yacc.y"
+#line 172 "yacc.y"
     {
         DefVarASTNode* var = new DefVarASTNode((char*)(yyvsp[0].str));
         var->set_type((char*)("integer pointer"));
         (yyval.a) = var;
     }
-#line 1663 "yacc.tab.c"
+#line 1667 "yacc.tab.c"
     break;
 
   case 22:
-#line 174 "yacc.y"
+#line 178 "yacc.y"
     {
         (yyval.a) = new DefVarASTNode((yyvsp[0].str));
     }
-#line 1671 "yacc.tab.c"
+#line 1675 "yacc.tab.c"
     break;
 
   case 23:
-#line 178 "yacc.y"
+#line 182 "yacc.y"
     {
         DefVarASTNode* var = new DefVarASTNode((char*)(yyvsp[-2].str));
         var->set_type((char*)("array"));
         var->set_array_length(NULL);
         (yyval.a) = var;
     }
-#line 1682 "yacc.tab.c"
+#line 1686 "yacc.tab.c"
     break;
 
   case 24:
-#line 185 "yacc.y"
+#line 189 "yacc.y"
     {
         DefVarASTNode* var = new DefVarASTNode((char*)(yyvsp[-3].str));
         var->set_type((char*)("array"));
         var->set_array_length((yyvsp[-1].str));
         (yyval.a) = var;
     }
-#line 1693 "yacc.tab.c"
+#line 1697 "yacc.tab.c"
     break;
 
   case 25:
-#line 193 "yacc.y"
+#line 197 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1701 "yacc.tab.c"
+#line 1705 "yacc.tab.c"
     break;
 
   case 26:
-#line 197 "yacc.y"
+#line 201 "yacc.y"
     {
         (yyvsp[-2].a)->get_last_peer_node()->add_peer_node((yyvsp[0].a));
         (yyval.a) = (yyvsp[-2].a);
     }
-#line 1710 "yacc.tab.c"
+#line 1714 "yacc.tab.c"
     break;
 
   case 27:
-#line 203 "yacc.y"
-    {
-        (yyval.a) = (yyvsp[0].a);
-    }
-#line 1718 "yacc.tab.c"
-    break;
-
-  case 28:
 #line 207 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1726 "yacc.tab.c"
+#line 1722 "yacc.tab.c"
+    break;
+
+  case 28:
+#line 211 "yacc.y"
+    {
+        (yyval.a) = (yyvsp[0].a);
+    }
+#line 1730 "yacc.tab.c"
     break;
 
   case 29:
-#line 212 "yacc.y"
+#line 216 "yacc.y"
     {
         (yyvsp[-2].a)->add_child_node((yyvsp[0].a));
         (yyval.a) = (yyvsp[-2].a);
     }
-#line 1735 "yacc.tab.c"
+#line 1739 "yacc.tab.c"
     break;
 
   case 30:
-#line 218 "yacc.y"
+#line 222 "yacc.y"
     {
         DefVarASTNode* temp = (DefVarASTNode*)(yyvsp[-1].a);
         if(temp->type == symbolType::unset)
             temp->set_type((yyvsp[-2].str));
         (yyval.a) = temp;
     }
-#line 1746 "yacc.tab.c"
+#line 1750 "yacc.tab.c"
     break;
 
   case 31:
-#line 226 "yacc.y"
+#line 230 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1754 "yacc.tab.c"
+#line 1758 "yacc.tab.c"
     break;
 
   case 32:
-#line 230 "yacc.y"
+#line 234 "yacc.y"
     {
         DefVarASTNode* temp = (DefVarASTNode*)(yyvsp[-2].a);
         if(temp->type == symbolType::unset)
@@ -1762,11 +1766,11 @@ yyreduce:
         (yyvsp[-2].a)->add_child_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1766 "yacc.tab.c"
+#line 1770 "yacc.tab.c"
     break;
 
   case 33:
-#line 238 "yacc.y"
+#line 242 "yacc.y"
     {
         AST* temp = NULL;
         if ((yyvsp[-2].a)->nodeType == ASTNodeType::op) {
@@ -1785,35 +1789,35 @@ yyreduce:
         (yyvsp[0].a)->set_parent(temp);
         (yyval.a) = temp;
     }
-#line 1789 "yacc.tab.c"
+#line 1793 "yacc.tab.c"
     break;
 
   case 34:
-#line 257 "yacc.y"
+#line 261 "yacc.y"
     {
         (yyval.a) = NULL;
     }
-#line 1797 "yacc.tab.c"
+#line 1801 "yacc.tab.c"
     break;
 
   case 35:
-#line 262 "yacc.y"
+#line 266 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1805 "yacc.tab.c"
+#line 1809 "yacc.tab.c"
     break;
 
   case 36:
-#line 266 "yacc.y"
+#line 270 "yacc.y"
     {
         (yyval.a) = NULL;
     }
-#line 1813 "yacc.tab.c"
+#line 1817 "yacc.tab.c"
     break;
 
   case 37:
-#line 271 "yacc.y"
+#line 275 "yacc.y"
     {
         AST* temp = NULL;
         if ((yyvsp[-2].a)->nodeType == ASTNodeType::op) {
@@ -1832,316 +1836,316 @@ yyreduce:
         (yyvsp[0].a)->set_parent(temp);
         (yyval.a) = temp;
     }
-#line 1836 "yacc.tab.c"
+#line 1840 "yacc.tab.c"
     break;
 
   case 38:
-#line 290 "yacc.y"
+#line 294 "yacc.y"
     {
         (yyval.a) = NULL;
     }
-#line 1844 "yacc.tab.c"
+#line 1848 "yacc.tab.c"
     break;
 
   case 39:
-#line 295 "yacc.y"
+#line 299 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1852 "yacc.tab.c"
+#line 1856 "yacc.tab.c"
     break;
 
   case 40:
-#line 299 "yacc.y"
+#line 303 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"&&", opType::And);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1863 "yacc.tab.c"
+#line 1867 "yacc.tab.c"
     break;
 
   case 41:
-#line 307 "yacc.y"
+#line 311 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1871 "yacc.tab.c"
+#line 1875 "yacc.tab.c"
     break;
 
   case 42:
-#line 311 "yacc.y"
+#line 315 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"||", opType::Or);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1882 "yacc.tab.c"
+#line 1886 "yacc.tab.c"
     break;
 
   case 43:
-#line 319 "yacc.y"
+#line 323 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1890 "yacc.tab.c"
+#line 1894 "yacc.tab.c"
     break;
 
   case 44:
-#line 324 "yacc.y"
+#line 328 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1901 "yacc.tab.c"
+#line 1905 "yacc.tab.c"
     break;
 
   case 45:
-#line 331 "yacc.y"
+#line 335 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1912 "yacc.tab.c"
+#line 1916 "yacc.tab.c"
     break;
 
   case 46:
-#line 338 "yacc.y"
+#line 342 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1923 "yacc.tab.c"
+#line 1927 "yacc.tab.c"
     break;
 
   case 47:
-#line 345 "yacc.y"
+#line 349 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1934 "yacc.tab.c"
+#line 1938 "yacc.tab.c"
     break;
 
   case 48:
-#line 352 "yacc.y"
+#line 356 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1945 "yacc.tab.c"
+#line 1949 "yacc.tab.c"
     break;
 
   case 49:
-#line 359 "yacc.y"
+#line 363 "yacc.y"
     {
         AST* temp = new OperatorASTNode((yyvsp[-1].str), opType::Relop);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1956 "yacc.tab.c"
+#line 1960 "yacc.tab.c"
     break;
 
   case 50:
-#line 366 "yacc.y"
+#line 370 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1964 "yacc.tab.c"
+#line 1968 "yacc.tab.c"
     break;
 
   case 51:
-#line 371 "yacc.y"
+#line 375 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 1972 "yacc.tab.c"
+#line 1976 "yacc.tab.c"
     break;
 
   case 52:
-#line 375 "yacc.y"
+#line 379 "yacc.y"
     {
         AST* temp = (yyvsp[-1].a);
         temp->add_child_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 1982 "yacc.tab.c"
+#line 1986 "yacc.tab.c"
     break;
 
   case 53:
-#line 382 "yacc.y"
+#line 386 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"+", opType::Orgative);
         (yyval.a) = temp;
     }
-#line 1991 "yacc.tab.c"
+#line 1995 "yacc.tab.c"
     break;
 
   case 54:
-#line 387 "yacc.y"
+#line 391 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"-", opType::Negative);
         (yyval.a) = temp;
     }
-#line 2000 "yacc.tab.c"
+#line 2004 "yacc.tab.c"
     break;
 
   case 55:
-#line 392 "yacc.y"
+#line 396 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"!", opType::Not);
         (yyval.a) = temp;
     }
-#line 2009 "yacc.tab.c"
+#line 2013 "yacc.tab.c"
     break;
 
   case 56:
-#line 397 "yacc.y"
+#line 401 "yacc.y"
     {
         AST* op = new OperatorASTNode((char*)"&", opType::SingalAnd);
         (yyval.a) = op;
     }
-#line 2018 "yacc.tab.c"
+#line 2022 "yacc.tab.c"
     break;
 
   case 57:
-#line 402 "yacc.y"
+#line 406 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"*", opType::GetValue);
         (yyval.a) = temp;
     }
-#line 2027 "yacc.tab.c"
+#line 2031 "yacc.tab.c"
     break;
 
   case 58:
-#line 408 "yacc.y"
+#line 412 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"+", opType::Plus);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2038 "yacc.tab.c"
+#line 2042 "yacc.tab.c"
     break;
 
   case 59:
-#line 415 "yacc.y"
+#line 419 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"-", opType::Minus);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2049 "yacc.tab.c"
+#line 2053 "yacc.tab.c"
     break;
 
   case 60:
-#line 422 "yacc.y"
+#line 426 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 2057 "yacc.tab.c"
+#line 2061 "yacc.tab.c"
     break;
 
   case 61:
-#line 427 "yacc.y"
+#line 431 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"*", opType::Times);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2068 "yacc.tab.c"
+#line 2072 "yacc.tab.c"
     break;
 
   case 62:
-#line 434 "yacc.y"
+#line 438 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"/", opType::Div);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2079 "yacc.tab.c"
+#line 2083 "yacc.tab.c"
     break;
 
   case 63:
-#line 441 "yacc.y"
+#line 445 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"%", opType::Mod);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2090 "yacc.tab.c"
+#line 2094 "yacc.tab.c"
     break;
 
   case 64:
-#line 448 "yacc.y"
+#line 452 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 2098 "yacc.tab.c"
+#line 2102 "yacc.tab.c"
     break;
 
   case 65:
-#line 453 "yacc.y"
+#line 457 "yacc.y"
     {
         (yyval.a) = (yyvsp[0].a);
     }
-#line 2106 "yacc.tab.c"
+#line 2110 "yacc.tab.c"
     break;
 
   case 66:
-#line 457 "yacc.y"
+#line 461 "yacc.y"
     {
         AST* temp = new OperatorASTNode((char*)"^", opType::Power);
         temp->add_child_node((yyvsp[-2].a));
         (yyvsp[-2].a)->add_peer_node((yyvsp[0].a));
         (yyval.a) = temp;
     }
-#line 2117 "yacc.tab.c"
+#line 2121 "yacc.tab.c"
     break;
 
   case 67:
-#line 465 "yacc.y"
+#line 469 "yacc.y"
     {
         (yyval.a) = (yyvsp[-1].a);
     }
-#line 2125 "yacc.tab.c"
+#line 2129 "yacc.tab.c"
     break;
 
   case 68:
-#line 469 "yacc.y"
+#line 473 "yacc.y"
     {
         (yyval.a) = new VarASTNode((yyvsp[0].str));
     }
-#line 2133 "yacc.tab.c"
+#line 2137 "yacc.tab.c"
     break;
 
   case 69:
-#line 473 "yacc.y"
+#line 477 "yacc.y"
     {
         (yyval.a) = new LiteralASTNode((yyvsp[0].str));
     }
-#line 2141 "yacc.tab.c"
+#line 2145 "yacc.tab.c"
     break;
 
   case 70:
-#line 477 "yacc.y"
+#line 481 "yacc.y"
     {
         AST* op = new OperatorASTNode((char*)"[]", opType::GetArrayValue);
         AST* var = new VarASTNode((char*)(yyvsp[-3].str));
@@ -2149,11 +2153,11 @@ yyreduce:
         var->add_peer_node((yyvsp[-1].a));
         (yyval.a) = op;
     }
-#line 2153 "yacc.tab.c"
+#line 2157 "yacc.tab.c"
     break;
 
 
-#line 2157 "yacc.tab.c"
+#line 2161 "yacc.tab.c"
 
       default: break;
     }
@@ -2385,5 +2389,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 485 "yacc.y"
+#line 489 "yacc.y"
 

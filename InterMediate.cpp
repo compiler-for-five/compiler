@@ -5,7 +5,7 @@ InterMediate::InterMediate(RootASTNode *rootNode,  SymbolTable *symbolTable)
 {
     tempVar.reserve(100);
     this->root = rootNode;
-    this->rootTable = new SymbolTable(symbolTable, false);//获得根结点所在的符号表
+    this->rootTable = symbolTable;//获得根结点所在的符号表
 }
 
 void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
@@ -79,6 +79,7 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
     case ASTNodeType::defVar:
     {
         DefVarASTNode *tempNode = (DefVarASTNode *)node;
+        /*
         if (tempNode->type == symbolType::Array)
         {
             symbolTable->addArraySymbol(tempNode);
@@ -87,6 +88,7 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
         {
             symbolTable->addSymbol(tempNode->value, tempNode->type);
         }
+        */
         symbol *varSymbol = symbolTable->findSymbol(node->value);
         if (p != NULL)
         {
