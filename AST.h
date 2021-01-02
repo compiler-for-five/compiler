@@ -19,8 +19,7 @@ enum class ASTNodeType
     loop = 6,
     select = 7,
     root = 8,
-    defFunc = 9,
-    callFunc = 10
+    printInt = 9
 };
 
 enum class symbolType

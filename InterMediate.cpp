@@ -19,23 +19,6 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
     AST *p = node->child;
     switch (node->nodeType)
     {
-    case ASTNodeType::defFunc:
-    {
-            Generate(p, symbolTable);
-        break;
-    }
-    case ASTNodeType::callFunc:
-    { 
-        while (p!=NULL)
-        {
-            Generate(p, symbolTable);
-            p = p->peer;
-        }
-        
-            
-        break;
-    }
-    
     case ASTNodeType::literal:
     {
         if (node->parent->nodeType == ASTNodeType::op)
@@ -121,12 +104,6 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
             else if (p->nodeType == ASTNodeType::op)
             {
                 symbol *arg1 = this->GenerateOp((OperatorASTNode *)p, symbolTable);
-                temp = new Quad(OpCode::ASSIGN, arg1, varSymbol);
-            }
-            else if (p->nodeType == ASTNodeType::callFunc)
-            {
-                Generate(p, symbolTable);
-                symbol *arg1 = tempVar.back();
                 temp = new Quad(OpCode::ASSIGN, arg1, varSymbol);
             }
             else
@@ -247,6 +224,15 @@ void InterMediate::Generate(AST* node, SymbolTable *symbolTable)
         }
         break;
     }
+    case ASTNodeType::printInt:
+    {
+        while (p != NULL)
+        {
+            Generate(p, symbolTable);
+            p = p->peer;
+        }
+        break;
+    }
     default:
         std::cout << "Hello! Something Wrong happened!\n";
         break;
@@ -260,8 +246,6 @@ SymbolTable *InterMediate::GenerateStmt(StmtASTNode *node, SymbolTable *symbolTa
     case StmtType::compStmt:
     {
         if (node->parent->nodeType == ASTNodeType::loop)
-            return symbolTable;
-        if (node->parent->nodeType == ASTNodeType::defFunc)
             return symbolTable;
         return symbolTable->createChildTable();
     }
@@ -296,12 +280,6 @@ SymbolTable *InterMediate::GenerateReturn(StmtASTNode *node, SymbolTable *symbol
     {
         symbol *arg1 = this->GenerateOp((OperatorASTNode *)p, symbolTable);
         temp = new Quad(OpCode::RETURN, arg1, result);
-    }
-    else if (p->nodeType == ASTNodeType::callFunc)
-    {
-        Generate(p, symbolTable);
-        symbol *arg1 = tempVar.back();
-        temp = new Quad(OpCode::RETURN, arg1, (symbol *)NULL);
     }
     else
     {
@@ -361,12 +339,6 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             int arg1 = std::stoi(arg1Node->value);
             temp = new Quad(op, arg1, result);
         }
-        else if (arg1Node->nodeType == ASTNodeType::callFunc)
-        {
-            Generate(arg1Node, symbolTable);
-            symbol *arg1 = tempVar.back();
-            temp = new Quad(op, arg1, result);
-        }
         else
         {
             std::cout << "\033[31mError: \033[0m"
@@ -402,12 +374,6 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
         else if (arg1Node->nodeType == ASTNodeType::literal)
         {
             int arg1 = std::stoi(arg1Node->value);
-            temp = new Quad(OpCode::ASSIGN_ARRAY, arg1, arg2, result);
-        }
-        else if (arg1Node->nodeType == ASTNodeType::callFunc)
-        {
-            Generate(arg1Node, symbolTable);
-            symbol *arg1 = tempVar.back();
             temp = new Quad(OpCode::ASSIGN_ARRAY, arg1, arg2, result);
         }
         else
@@ -627,12 +593,6 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             symbol *arg1 = symbolTable->findSymbol(arg1Node->value);
             temp = new Quad(OpCode::GET_VALUE, arg1, result);
         }
-        else if (arg1Node->nodeType == ASTNodeType::callFunc)
-        {
-            Generate(arg1Node, symbolTable);
-            symbol *arg1 = tempVar.back();
-            temp = new Quad(OpCode::GET_VALUE, arg1, result);
-        }
         else if (arg1Node->nodeType == ASTNodeType::op)
         {
             symbol *arg1 = GenerateOp((OperatorASTNode *)arg1Node, symbolTable);
@@ -663,12 +623,6 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             {
                 childValue.push(symbolTable->findSymbol(arg2Node->value));
             }
-            else if (arg2Node->nodeType == ASTNodeType::callFunc)
-            {
-                Generate(arg2Node, symbolTable);
-                symbol *arg2 = tempVar.back();
-                childValue.push(arg2);
-            }
             else if (arg2Node->nodeType == ASTNodeType::literal)
             {
                 symbol *arg2 = new symbol(arg2Node->value, symbolType::literal);
@@ -692,12 +646,6 @@ symbol *InterMediate::GenerateOp(OperatorASTNode *node, SymbolTable *symbolTable
             if (arg2Node->nodeType == ASTNodeType::assignVar)
             {
                 symbol *arg2 = symbolTable->findSymbol(arg2Node->value);
-                temp = new Quad(OpCode::GET_ARRAY, arg1, arg2, result);
-            }
-            else if (arg2Node->nodeType == ASTNodeType::callFunc)
-            {
-                Generate(arg2Node, symbolTable);
-                symbol *arg2 = tempVar.back();
                 temp = new Quad(OpCode::GET_ARRAY, arg1, arg2, result);
             }
             else if (arg2Node->nodeType == ASTNodeType::literal)
