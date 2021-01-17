@@ -6,8 +6,9 @@ int main()
     int array[10];
     array[0] = a;
     a = array[0];
-    int *p = &a;
+    //int *p = &a;
     *p = a;
     a = *p;
     print_int(a);
+    return 0;
 }
